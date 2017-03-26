@@ -25,6 +25,9 @@ var app = new Vue({
             width: 0,
             height: 0
         },
+        outputAA: {
+            width: 550,
+        },
         resultAA: ''
     },
     methods: {
@@ -43,44 +46,57 @@ var app = new Vue({
             };
             reader.readAsDataURL(file);
         },
+        canvasResize: function(canvas, scale_ratio) {
+            var img = new Image();
+            img.onload = function() {
+                var ctx = canvas.getContext("2d");
+                canvas.width *= scale_ratio;
+                canvas.height *= scale_ratio;
+                ctx.scale(scale_ratio, scale_ratio);
+                ctx.drawImage(img, 0, 0);
+                this.grayscaleImage.URL = canvas.toDataURL();
+            }.bind(this);
+            img.src = canvas.toDataURL();
+        },
         grayscale: function(imageURL) {
             try {
                 // get image
                 var canvas = document.createElement("canvas");
-                var ctx = canvas.getContext("2d");
                 var img = new Image();
-                img.src = imageURL;
-                canvas.width = img.width;
-                canvas.height = img.height;
-                ctx.drawImage(img, 0, 0);
-                var pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                // update input image info
-                this.inputImage.width = img.width;
-                this.inputImage.height = img.height;
-                // grayscaling
-                for (var y = 0; y < pixels.height; y++) {
-                    for (var x = 0; x < pixels.width; x++) {
-                        var i = (y * 4) * pixels.width + x * 4;
-                        var rgb = parseInt((pixels.data[i] + pixels.data[i + 1] + pixels.data[i + 2]) / 3, 10);
-                        pixels.data[i] = rgb;
-                        pixels.data[i + 1] = rgb;
-                        pixels.data[i + 2] = rgb;
+                img.onload = function() {
+                    var ctx = canvas.getContext("2d");
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    // draw image to canvas
+                    ctx.drawImage(img, 0, 0);
+                    // get image data
+                    var pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    // update input image info
+                    this.inputImage.width = img.width;
+                    this.inputImage.height = img.height;
+                    // grayscaling
+                    for (var y = 0; y < pixels.height; y++) {
+                        for (var x = 0; x < pixels.width; x++) {
+                            var i = (y * 4) * pixels.width + x * 4;
+                            var rgb = parseInt((pixels.data[i] + pixels.data[i + 1] + pixels.data[i + 2]) / 3, 10);
+                            pixels.data[i] = rgb;
+                            pixels.data[i + 1] = rgb;
+                            pixels.data[i + 2] = rgb;
+                        }
                     }
-                }
-                // update
-                ctx.putImageData(pixels, 0, 0, 0, 0, pixels.width, pixels.height);
-                return [canvas.toDataURL(), pixels.width, pixels.height];
+                    ctx.putImageData(pixels, 0, 0);
+                    // update scale
+                    let scale_ratio = this.outputAA.width / img.width;
+                    this.canvasResize(canvas, scale_ratio);
+                }.bind(this);
+                img.src = imageURL;
             } catch (err) {
                 console.error('grayscale: ', err.message);
                 this.resultAA = err.message;
-                return '';
             }
         },
         inputImageLoad: function() {
-            let [url, width, height] = this.grayscale(this.inputImage.URL);
-            this.grayscaleImage.URL = url;
-            this.grayscaleImage.width = width;
-            this.grayscaleImage.height = height;
+            this.grayscale(this.inputImage.URL);
         },
         grayscaleImageLoad: async function() {
             try {
@@ -93,7 +109,9 @@ var app = new Vue({
                 canvas.height = img.height;
                 ctx.drawImage(img, 0, 0);
                 const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
+                // update grayscaleImage info
+                this.grayscaleImage.width = img.width;
+                this.grayscaleImage.height = img.height;
                 // convert ndarray
                 let dataTensor = ndarray(new Float32Array(pixels.data), [pixels.width, pixels.height]);
                 // normalization (0.0 ~ 1.0)
