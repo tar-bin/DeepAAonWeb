@@ -14,11 +14,12 @@ body {
     <div id="app" class="container-fluid">
       <div class="navbar-header">
         <a class="navbar-brand" href="#">DeepAA on Web</a>
-      </div>
-      <ul class="nav navbar-nav navbar-right">
         <div class="navbar-text" v-if="modelLoading">
           Model Loading...{{ loadingProgress }}%
         </div>
+      </div>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="https://github.com/OsciiArt/DeepAA" target="_new">DeepAA (GitHub)</a></li>
       </ul>
     </div>
   </nav>
