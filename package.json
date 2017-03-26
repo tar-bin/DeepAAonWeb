@@ -18,6 +18,8 @@
   "license": "MIT",
   "dependencies": {
     "bootstrap": "^3.3.7",
+    "ndarray": "^1.0.18",
+    "ndarray-ops": "^1.2.2",
     "vue": "^2.2.5"
   },
   "devDependencies": {
