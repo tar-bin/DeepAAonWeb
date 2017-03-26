@@ -5,7 +5,6 @@ var app = new Vue({
     el: '#app',
     data: {
         modelLoading: true,
-        message: 'hello world',
         model: new KerasJS.Model({
             filepaths: {
                 model: 'model/model.json',
@@ -15,12 +14,10 @@ var app = new Vue({
             gpu: true
         }),
         inputImageURL: 'sample-data/test_image.png',
-        grayscaleImageURL: ''
+        grayscaleImageURL: '',
+        resultAA: ''
     },
     methods: {
-        inputImageLoad: function() {
-            this.grayscaleImageURL = this.grayscale(this.inputImageURL);
-        },
         grayscale: function(imageURL) {
             var canvas = document.createElement("canvas");
             var ctx = canvas.getContext("2d");
@@ -42,6 +39,14 @@ var app = new Vue({
             }
             ctx.putImageData(pixels, 0, 0, 0, 0, pixels.width, pixels.height);
             return canvas.toDataURL();
+        },
+        inputImageLoad: function() {
+            this.grayscaleImageURL = this.grayscale(this.inputImageURL);
+        },
+        grayscaleImageLoad: function() {
+            console.log('ready');
+            var out = 'ready';
+            this.resultAA = out;
         }
     },
     computed: {
