@@ -3,27 +3,51 @@
 <!-- Optional theme -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 
+<style>
+body {
+   padding-top: 70px;
+}
+</style>
+
 <div id="app" class="container-fluid">
-  <!--<div class="loading-progress" v-if="modelLoading && loadingProgress < 100">-->
-  <div class="row">
-    <div class="col-md-6" v-if="modelLoading">
-      Loading...{{ loadingProgress }}%
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div id="app" class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">DeepAA on Web</a>
+        <div class="navbar-text" v-if="modelLoading">
+          Model Loading...{{ loadingProgress }}%
+        </div>
+      </div>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="https://github.com/tar-bin/DeepAAonWeb" target="_new">DeepAAonWeb (GitHub)</a></li>
+        <li><a href="https://github.com/OsciiArt/DeepAA" target="_new">DeepAA (GitHub)</a></li>
+      </ul>
     </div>
+  </nav>
+  <div class="row">
+    <input type="file" @change="onFileChange">
   </div>
   <div class="row">
     <div class="col-md-6">
       <div class="row">
         <div class="col-md-6">
-          <img id="img-input" class="img-thumbnail" src="sample-data/test_image.png">
+          <div class="row">
+            <h3>Original Image {{ inputImage.width }} x {{ inputImage.height }}</h3>
+          </div>
+          <div class="row">
+            <img id="img-input" class="img-thumbnail" :src="inputImage.URL" v-on:load="inputImageLoad">
+          </div>
         </div>
         <div class="col-md-6">
-          <img id="img-grayscale" class="img-thumbnail" src="sample-data/test_image.png">
+          <h3>Gray Scale Image {{ grayscaleImage.width }} x {{ grayscaleImage.height }}</h3>
+          <img id="img-grayscale" class="img-thumbnail" :src="grayscaleImage.URL" v-on:load="grayscaleImageLoad">
         </div>
       </div>
     </div>
     <div class="col-md-6">
       <div class="row">
-        <textarea class="form-control" style="height: 100%" v-model="message"></textarea>
+        <h3>Output AA</h3>
+        <textarea class="form-control" style="height: 100%" v-model="resultAA"></textarea>
       </div>
     </div>
   </div>
