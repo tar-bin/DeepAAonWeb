@@ -128,44 +128,86 @@ var app = new Vue({
                 this.grayscaleImage.height = img.height;
                 // convert ndarray
                 let dataTensor = ndarray(new Float32Array(pixels.data), [pixels.width, pixels.height]);
+                // console.log('dataTensor', dataTensor)
                 // normalization (0.0 ~ 1.0)
                 ops.divseq(dataTensor, 255);
                 // calc AA line count
-                let lineNum = Math.floor(pixels.height / 18);
+                let lineNum = Math.floor((pixels.height - 48) / 18);
                 console.log('line count', lineNum);
 
                 // wait until model is ready
                 await this.model.ready();
                 console.log('model ready!');
 
-                console.log(this.charListFile);
+                let float32concat = function(first, second) {
+                    let result = new Float32Array(first.length + second.length);
+                    result.set(first);
+                    result.set(second, first.length);
+                    return result;
+                };
 
-                // eval
-                // for (var i = 0; i < lineNum; i++) {
-                //     console.log(dataTensor)
+                // loop each line
+                for (var i = 0; i < lineNum; i++) {
+                    let lineImage =
+                        dataTensor.data.slice(
+                            i * dataTensor.shape[0],
+                            (i + 64) * dataTensor.shape[0]);
+                    // console.log('lineImage', lineImage);
 
-                //     let lineImage = dataTensor.data.slice(i * 18, i * 18 + 64);
-                //     let lineCharList = '';
-                //     let start = 0;
-                //     let end = 64;
-                //     let penalty = 1;
+                    let lineCharList = '';
+                    let start = 0;
+                    let end = 64;
+                    let penalty = 1;
 
-                //     let width = 64;
-                //     while (end <= dataTensor.shape[1]) {
-                //         // lineImage.T
-                //         let patch = ndarray(new Float32Array(lineImage), [1, 64, 64]);
-                //         // predict
-                //         const inputData = {
-                //             'input_1': new Float32Array(patch.data)
-                //         };
-                //         const outputData = await this.model.predict(inputData);
-                //         console.log(outputData);
+                    let width = 64;
+                    while (end <= dataTensor.shape[0]) {
+                        let patch_data = new Float32Array();
+                        for (var j = 0; j < 64; j++) {
+                            let line_data = lineImage.slice(
+                                    (j * dataTensor.shape[0]) + start,
+                                    (j * dataTensor.shape[0]) + end);
+                            patch_data = float32concat(patch_data, line_data);
+                        }
+                        // console.log('patch_data', patch_data);
+                        let patch = ndarray(new Float32Array(patch_data), [64, 64]);
+                        // console.log('patch', patch);
+                        // predict
+                        const inputData = {
+                            'input_1': patch.data
+                        };
+                        let y = await this.model.predict(inputData);
+                        y = ndarray(y.dense_1, [y.dense_1.length, 1]);
 
-                //         end += width;
-                //         await this.sleep(100);
-                //         console.log('processing: ', i, ', ', end);
-                //     }
-                // }
+                        if (penalty==1) {
+                           y.set(0, 1, 0);
+                        }
+
+                        console.log('y', y);
+
+                        let predict = ops.argmax(y)[1];
+                        console.log('predict', predict);
+                        let char = this.charListFile[predict][0];
+                        let char_width = this.charListFile[predict][1];
+                        console.log('char', '\'' + char + '\'')
+                        console.log('char_width', char_width)
+
+                        this.resultAA += char;
+                        
+                        start += char_width;
+                        end += char_width;
+
+                        if (predict==1) {
+                            penalty = 1;
+                        } else {
+                            penalty = 0;
+                        }
+                        await this.sleep(10);
+                        console.log('processing: ', i, ', ', end);
+                        break;
+                    }
+                    this.resultAA += '\n';
+                    break;
+                }
             } catch (err) {
                 console.error('model: ', err.message);
                 this.resultAA = err.message;
