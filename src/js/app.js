@@ -46,6 +46,17 @@ var app = new Vue({
             };
             reader.readAsDataURL(file);
         },
+        canvasAddMargin: function(canvas) {
+            var img = new Image();
+            img.onload = function() {
+                var ctx = canvas.getContext("2d");
+                canvas.width = (24 + 17) + img.width + (24 + 17);
+                canvas.height = 24 + img.height + 24;
+                ctx.drawImage(img, 24 + 17, 24);
+                this.grayscaleImage.URL = canvas.toDataURL();
+            }.bind(this);
+            img.src = canvas.toDataURL();
+        },
         canvasResize: function(canvas, scale_ratio) {
             var img = new Image();
             img.onload = function() {
@@ -54,7 +65,7 @@ var app = new Vue({
                 canvas.height *= scale_ratio;
                 ctx.scale(scale_ratio, scale_ratio);
                 ctx.drawImage(img, 0, 0);
-                this.grayscaleImage.URL = canvas.toDataURL();
+                this.canvasAddMargin(canvas);
             }.bind(this);
             img.src = canvas.toDataURL();
         },
