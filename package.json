@@ -1,0 +1,31 @@
+{
+  "name": "deepaaonweb",
+  "version": "1.0.0",
+  "description": "DeepAA front-end on Web",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tar-bin/DeepAAonWeb"
+  },
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server",
+    "production": "webpack -p",
+    "develop": "webpack -d",
+    "watch": "webpack -d --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "vue": "^2.2.5"
+  },
+  "devDependencies": {
+    "css-loader": "^0.27.3",
+    "html-webpack-plugin": "^2.28.0",
+    "style-loader": "^0.16.0",
+    "url-loader": "^0.5.8",
+    "webpack": "^2.3.2",
+    "webpack-dev-server": "^2.4.2"
+  }
+}
