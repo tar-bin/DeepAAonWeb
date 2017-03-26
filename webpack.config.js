@@ -9,7 +9,7 @@ module.exports = {
     },
     output: {
         filename: '[name].bundle.js',
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'docs'),
     },
     plugins: [
         // new webpack.optimize.UglifyJsPlugin(),
@@ -19,31 +19,12 @@ module.exports = {
         })
     ],
     devServer: {
-        contentBase: path.resolve(__dirname, 'dist')
+        contentBase: path.resolve(__dirname, 'docs')
     },
     resolve: {
         alias: {
             'vue$': 'vue/dist/vue.esm.js'
         }
-    },
-        module: {
-        loaders: [
-            // {
-            //     loader: 'babel',
-            //     exclude: /node_modules/,
-            //     test: /\.js[x]?$/,
-            //     query: {
-            //         cacheDirectory: true,
-            //         presets: ['react', 'es2015']
-            //     }
-            // },
-            { test: /\.css$/, loader: 'style-loader!css-loader' },
-            { test: /\.svg$/, loader: 'url-loader?mimetype=image/svg+xml' },
-            { test: /\.woff$/, loader: 'url-loader?mimetype=application/font-woff' },
-            { test: /\.woff2$/, loader: 'url-loader?mimetype=application/font-woff' },
-            { test: /\.eot$/, loader: 'url-loader?mimetype=application/font-woff' },
-            { test: /\.ttf$/, loader: 'url-loader?mimetype=application/font-woff' }
-        ]
     }
     // devtool: 'source-map'
 };
