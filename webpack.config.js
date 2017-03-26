@@ -21,6 +21,14 @@ module.exports = {
     devServer: {
         contentBase: path.resolve(__dirname, 'docs')
     },
+    module: {
+        rules: [
+            {
+                test: /\.json$/,
+                use: 'json-loader'
+            }
+        ]
+    },
     resolve: {
         alias: {
             'vue$': 'vue/dist/vue.esm.js'

@@ -3,6 +3,8 @@ import Vue from 'vue'
 import ndarray from 'ndarray';
 import ops from 'ndarray-ops';
 
+import CharListFile from  '../char_list.json'
+
 var app = new Vue({
     el: '#app',
     data: {
@@ -15,6 +17,7 @@ var app = new Vue({
             },
             gpu: true
         }),
+        charListFile: CharListFile,
         inputImage: {
             URL: 'sample-data/test_image.png',
             width: 0,
@@ -134,6 +137,8 @@ var app = new Vue({
                 // wait until model is ready
                 await this.model.ready();
                 console.log('model ready!');
+
+                console.log(this.charListFile);
 
                 // eval
                 // for (var i = 0; i < lineNum; i++) {
