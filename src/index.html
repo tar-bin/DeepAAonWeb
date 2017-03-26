@@ -3,26 +3,41 @@
 <!-- Optional theme -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 
+<style>
+body {
+   padding-top: 70px;
+}
+</style>
+
 <div id="app" class="container-fluid">
-  <!--<div class="loading-progress" v-if="modelLoading && loadingProgress < 100">-->
-  <div class="row">
-    <div class="col-md-6" v-if="modelLoading">
-      Loading...{{ loadingProgress }}%
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div id="app" class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">DeepAA on Web</a>
+      </div>
+      <ul class="nav navbar-nav navbar-right">
+        <div class="navbar-text" v-if="modelLoading">
+          Model Loading...{{ loadingProgress }}%
+        </div>
+      </ul>
     </div>
-  </div>
+  </nav>
   <div class="row">
     <div class="col-md-6">
       <div class="row">
         <div class="col-md-6">
+          <h3>Original Image</h3>
           <img id="img-input" class="img-thumbnail" src="sample-data/test_image.png">
         </div>
         <div class="col-md-6">
+          <h3>Gray Scale Image</h3>
           <img id="img-grayscale" class="img-thumbnail" src="sample-data/test_image.png">
         </div>
       </div>
     </div>
     <div class="col-md-6">
       <div class="row">
+        <h3>Output AA</h3>
         <textarea class="form-control" style="height: 100%" v-model="message"></textarea>
       </div>
     </div>
