@@ -39,15 +39,17 @@ body {
     </div>
   </nav>
   <div class="row">
-    <form class="form-inline">
-      <div class="form-group">
-        <input type="file" @change="onFileChange">
-      </div>
-      <div class="form-group">
-        <label for="Output">Output Width:</label>
-        <input v-model="outputAA.width" type="text" class="form-control" id="outputAASize" placeholder="出力横幅">
-      </div>
-    </form>
+    <div class="container-fluid">
+      <form class="form-inline">
+        <div class="form-group">
+          <input type="file" @change="onFileChange">
+        </div>
+        <div class="form-group">
+          <label for="Output">Output Width:</label>
+          <input v-model="outputAA.width" type="text" class="form-control" id="outputAASize" placeholder="出力横幅">
+        </div>
+      </form>
+    </div>
   </div>
   <div class="row">
     <div class="container-fluid">
