@@ -31,6 +31,7 @@ var app = new Vue({
         outputAA: {
             lineMaxNum: '-',
             progressLineNum: '-',
+            linePercentage: 0,
             width: 550,
         },
         resultAA: ''
@@ -173,6 +174,9 @@ var app = new Vue({
 
                     let width = 64;
                     while (end <= dataTensor.shape[0]) {
+                        // update line progress
+                        this.outputAA.linePercentage = Math.floor(end / dataTensor.shape[0] * 100);
+                        // reshape
                         let patch_data = new Float32Array();
                         for (var j = 0; j < 64; j++) {
                             let line_data = lineImage.slice(
