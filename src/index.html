@@ -68,8 +68,22 @@ body {
     </div>
     <div class="col-md-6">
       <div class="row">
-        <h3>Output AA [{{ outputAA.progressLineNum }} / {{ outputAA.lineMaxNum }}][{{ outputAA.linePercentage }}%]</h3>
-        <textarea class="form-control aa" rows=35 v-model="resultAA"></textarea>
+        <div class="row">
+          <div class="col-md-9">
+            <h3>Line Image</h3>
+            <img class="img-thumbnail" :src="previewLineImage.URL">
+          </div>
+          <div class="col-md-3">
+            <h3>Patch Image</h3>
+            <img class="img-thumbnail" :src="previewPatchImage.URL">
+          </div>
+        </div>
+        <div class="row">
+          <div class="container-fluid">
+            <h3>Output AA [{{ outputAA.progressLineNum }} / {{ outputAA.lineMaxNum }}][{{ outputAA.linePercentage }}%]</h3>
+            <textarea class="form-control aa" rows=35 v-model="resultAA"></textarea>
+          </div>
+        </div>
       </div>
     </div>
   </div>

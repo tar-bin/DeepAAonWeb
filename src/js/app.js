@@ -28,6 +28,16 @@ var app = new Vue({
             width: 0,
             height: 0
         },
+        previewLineImage: {
+            URL: '',
+            width: 0,
+            height: 0
+        },
+        previewPatchImage: {
+            URL: '',
+            width: 0,
+            height: 0
+        },
         outputAA: {
             lineMaxNum: '-',
             progressLineNum: '-',
@@ -119,6 +129,8 @@ var app = new Vue({
         },
         grayscaleImageLoad: async function() {
             try {
+                // clear output AA
+                this.resultAA = '';
                 // get input data
                 const canvas = document.createElement("canvas");
                 const ctx = canvas.getContext("2d");
@@ -160,14 +172,14 @@ var app = new Vue({
                 for (var i = 0; i < lineNum; i++) {
                     // update progress
                     this.outputAA.progressLineNum = i;
-
+                    // reshape lineImage
                     let lineImage =
                         dataTensor.data.slice(
                             i * dataTensor.shape[0],
                             (i + 64) * dataTensor.shape[0]);
                     // console.log('lineImage', lineImage);
+                    this.updatePreviewLineImage(lineImage, dataTensor.shape[0], 64);
 
-                    let lineCharList = '';
                     let start = 0;
                     let end = 64;
                     let penalty = 1;
@@ -186,6 +198,7 @@ var app = new Vue({
                         }
                         // console.log('patch_data', patch_data);
                         let patch = ndarray(new Float32Array(patch_data), [64, 64]);
+                        this.updatePreviewPatchImage(patch.data, 64, 64);
                         // console.log('patch', patch);
                         // predict
                         const inputData = {
@@ -217,7 +230,7 @@ var app = new Vue({
                         } else {
                             penalty = 0;
                         }
-                        await this.sleep(10);
+                        await this.sleep(16);
                     }
                     this.resultAA += '\n';
                 }
@@ -225,6 +238,48 @@ var app = new Vue({
                 console.error('model: ', err.message);
                 this.resultAA = err.message;
             }
+        },
+        updatePreviewLineImage: function(data, width, height) {
+            var canvas = document.createElement("canvas");
+            var ctx = canvas.getContext("2d");
+            canvas.width = width;
+            canvas.height = height;
+            var pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            for (var y = 0; y < pixels.height; y++) {
+                for (var x = 0; x < pixels.width; x++) {
+                    var i = (y * 4) * pixels.width + x * 4;
+                    var rgb = data[x + y * pixels.width] * 255;
+                    pixels.data[i] = rgb;
+                    pixels.data[i + 1] = rgb;
+                    pixels.data[i + 2] = rgb;
+                    pixels.data[i + 3] = 255;
+                }
+            }
+            ctx.putImageData(pixels, 0, 0);
+            this.previewLineImage.width = width;
+            this.previewLineImage.height = height;
+            this.previewLineImage.URL = canvas.toDataURL();
+        },
+        updatePreviewPatchImage: function(data, width, height) {
+            var canvas = document.createElement("canvas");
+            var ctx = canvas.getContext("2d");
+            canvas.width = width;
+            canvas.height = height;
+            var pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            for (var y = 0; y < pixels.height; y++) {
+                for (var x = 0; x < pixels.width; x++) {
+                    var i = (y * 4) * pixels.width + x * 4;
+                    var rgb = data[x + y * pixels.width] * 255;
+                    pixels.data[i] = rgb;
+                    pixels.data[i + 1] = rgb;
+                    pixels.data[i + 2] = rgb;
+                    pixels.data[i + 3] = 255;
+                }
+            }
+            ctx.putImageData(pixels, 0, 0);
+            this.previewPatchImage.width = width;
+            this.previewPatchImage.height = height;
+            this.previewPatchImage.URL = canvas.toDataURL();
         },
         sleep: async function (ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
