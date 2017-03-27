@@ -176,15 +176,15 @@ var app = new Vue({
                             'input_1': patch.data
                         };
                         let y = await this.model.predict(inputData);
-                        y = ndarray(y.dense_1, [y.dense_1.length, 1]);
+                        y = ndarray(y.dense_1);
 
                         if (penalty==1) {
-                           y.set(0, 1, 0);
+                           y.set(1, 0);
                         }
 
                         console.log('y', y);
 
-                        let predict = ops.argmax(y)[1];
+                        let predict = ops.argmax(y);
                         console.log('predict', predict);
                         let char = this.charListFile[predict][0];
                         let char_width = this.charListFile[predict][1];
