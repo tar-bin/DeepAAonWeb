@@ -57,6 +57,8 @@ var app = new Vue({
                 var ctx = canvas.getContext("2d");
                 canvas.width = (24 + 17) + img.width + (24 + 17);
                 canvas.height = 24 + img.height + 24;
+                ctx.fillStyle = "white";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(img, 24 + 17, 24);
                 this.grayscaleImage.URL = canvas.toDataURL();
             }.bind(this);
