@@ -50,38 +50,40 @@ body {
     </form>
   </div>
   <div class="row">
-    <div class="col-md-6">
-      <div class="row">
-        <div class="col-md-6">
-          <div class="row">
-            <h3>Original Image {{ inputImage.width }} x {{ inputImage.height }}</h3>
+    <div class="container-fluid">
+      <div class="col-md-6">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="row">
+              <h3>Original Image {{ inputImage.width }} x {{ inputImage.height }}</h3>
+            </div>
+            <div class="row">
+              <img id="img-input" class="img-thumbnail" :src="inputImage.URL" v-on:load="inputImageLoad">
+            </div>
           </div>
-          <div class="row">
-            <img id="img-input" class="img-thumbnail" :src="inputImage.URL" v-on:load="inputImageLoad">
+          <div class="col-md-6">
+            <h3>Gray Scale & Resize Image {{ grayscaleImage.width }} x {{ grayscaleImage.height }}</h3>
+            <img id="img-grayscale" class="img-thumbnail" :src="grayscaleImage.URL" v-on:load="grayscaleImageLoad">
           </div>
-        </div>
-        <div class="col-md-6">
-          <h3>Gray Scale & Resize Image {{ grayscaleImage.width }} x {{ grayscaleImage.height }}</h3>
-          <img id="img-grayscale" class="img-thumbnail" :src="grayscaleImage.URL" v-on:load="grayscaleImageLoad">
         </div>
       </div>
-    </div>
-    <div class="col-md-6">
-      <div class="row">
+      <div class="col-md-6">
         <div class="row">
-          <div class="col-md-9">
-            <h3>Line Image</h3>
-            <img class="img-thumbnail" :src="previewLineImage.URL">
+          <div class="row">
+            <div class="col-md-9">
+              <h3>Line Image</h3>
+              <img class="img-thumbnail" :src="previewLineImage.URL">
+            </div>
+            <div class="col-md-3">
+              <h3>Patch Image</h3>
+              <img class="img-thumbnail" :src="previewPatchImage.URL">
+            </div>
           </div>
-          <div class="col-md-3">
-            <h3>Patch Image</h3>
-            <img class="img-thumbnail" :src="previewPatchImage.URL">
-          </div>
-        </div>
-        <div class="row">
-          <div class="container-fluid">
-            <h3>Output AA [{{ outputAA.progressLineNum }} / {{ outputAA.lineMaxNum }}][{{ outputAA.linePercentage }}%]</h3>
-            <textarea class="form-control aa" rows=35 v-model="resultAA"></textarea>
+          <div class="row">
+            <div class="container-fluid">
+              <h3>Output AA {{ progressMessage }}</h3>
+              <textarea class="form-control aa" rows=30 v-model="resultAA"></textarea>
+            </div>
           </div>
         </div>
       </div>

@@ -248,6 +248,8 @@ var app = new Vue({
                     this.resultAA += '\n';
                 }
                 // finish
+                this.outputAA.progressLineNum = lineNum;
+                this.outputAA.linePercentage = 100;
                 this.modelRunning = false;
             } catch (err) {
                 this.modelRunning = false;
@@ -304,6 +306,15 @@ var app = new Vue({
     computed: {
         loadingProgress: function() {
             return this.model.getLoadingProgress();
+        },
+        progressMessage: function() {
+            let _line = '[' + this.outputAA.progressLineNum + '/' + this.outputAA.lineMaxNum + ']';
+            let _linePercentage = '[' + this.outputAA.linePercentage + '%]';
+            if (this.outputAA.linePercentage == 100) {
+                return '[Complete!]';
+            } else {
+                return _line + _linePercentage;
+            }
         }
     }
 })
