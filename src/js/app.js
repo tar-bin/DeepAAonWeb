@@ -29,6 +29,8 @@ var app = new Vue({
             height: 0
         },
         outputAA: {
+            lineMaxNum: '-',
+            progressLineNum: '-',
             width: 550,
         },
         resultAA: ''
@@ -126,7 +128,7 @@ var app = new Vue({
                 // update grayscaleImage info
                 this.grayscaleImage.width = img.width;
                 this.grayscaleImage.height = img.height;
-                // convert ndarray
+                // convert ndarray (width * height * RGBA)
                 let dataSourceTensor = ndarray(new Float32Array(pixels.data), [pixels.width, pixels.height, 4]);
                 // console.log('dataSourceTensor', dataSourceTensor)
                 // normalization (0.0 ~ 1.0)
@@ -137,6 +139,7 @@ var app = new Vue({
                 // console.log('dataTensor', dataTensor)
                 // calc AA line count
                 let lineNum = Math.floor((pixels.height - 48) / 18);
+                this.outputAA.lineMaxNum = lineNum;
                 console.log('line count', lineNum);
 
                 // wait until model is ready
@@ -152,6 +155,9 @@ var app = new Vue({
 
                 // loop each line
                 for (var i = 0; i < lineNum; i++) {
+                    // update progress
+                    this.outputAA.progressLineNum = i;
+
                     let lineImage =
                         dataTensor.data.slice(
                             i * dataTensor.shape[0],
@@ -205,8 +211,7 @@ var app = new Vue({
                         } else {
                             penalty = 0;
                         }
-                        await this.sleep(3);
-                        // console.log('processing: ', i, ', ', end);
+                        await this.sleep(10);
                     }
                     this.resultAA += '\n';
                 }
