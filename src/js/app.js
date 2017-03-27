@@ -9,6 +9,8 @@ var app = new Vue({
     el: '#app',
     data: {
         modelLoading: true,
+        modelRunning: false,
+        modelInterrupt: false,
         model: new KerasJS.Model({
             filepaths: {
                 model: 'model/model.json',
@@ -129,6 +131,13 @@ var app = new Vue({
         },
         grayscaleImageLoad: async function() {
             try {
+                while (this.modelRunning) {
+                    this.modelInterrupt = true;
+                    console.log('wait until stopped current process')
+                    await this.sleep(16);
+                }
+                this.modelRunning = true;
+                this.modelInterrupt = false;
                 // clear output AA
                 this.resultAA = '';
                 // get input data
@@ -175,8 +184,8 @@ var app = new Vue({
                     // reshape lineImage
                     let lineImage =
                         dataTensor.data.slice(
-                            i * dataTensor.shape[0],
-                            (i + 64) * dataTensor.shape[0]);
+                            (i * 18) * dataTensor.shape[0],
+                            ((i * 18) + 64) * dataTensor.shape[0]);
                     // console.log('lineImage', lineImage);
                     this.updatePreviewLineImage(lineImage, dataTensor.shape[0], 64);
 
@@ -230,11 +239,18 @@ var app = new Vue({
                         } else {
                             penalty = 0;
                         }
+                        if (this.modelInterrupt) {
+                            this.modelRunning = false;
+                            return;
+                        }
                         await this.sleep(16);
                     }
                     this.resultAA += '\n';
                 }
+                // finish
+                this.modelRunning = false;
             } catch (err) {
+                this.modelRunning = false;
                 console.error('model: ', err.message);
                 this.resultAA = err.message;
             }

@@ -4,6 +4,20 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 
 <style>
+@font-face{
+    font-family: 'Saitamaar';
+    src: url('fonts/Saitamaar.eot') format('eot'),
+    url('fonts/Saitamaar.woff2') format('woff'),
+    url('fonts/Saitamaar.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+.aa {
+    font-family: 'Saitamaar', 'ＭＳ Ｐゴシック', 'MS PGothic', 'IPAMonaPGothic' !important;
+    line-height:18px;
+    font-size:16px;
+}
+
 body {
    padding-top: 70px;
 }
@@ -54,8 +68,22 @@ body {
     </div>
     <div class="col-md-6">
       <div class="row">
-        <h3>Output AA</h3>
-        <textarea class="form-control" rows=35 v-model="resultAA"></textarea>
+        <div class="row">
+          <div class="col-md-9">
+            <h3>Line Image</h3>
+            <img class="img-thumbnail" :src="previewLineImage.URL">
+          </div>
+          <div class="col-md-3">
+            <h3>Patch Image</h3>
+            <img class="img-thumbnail" :src="previewPatchImage.URL">
+          </div>
+        </div>
+        <div class="row">
+          <div class="container-fluid">
+            <h3>Output AA [{{ outputAA.progressLineNum }} / {{ outputAA.lineMaxNum }}][{{ outputAA.linePercentage }}%]</h3>
+            <textarea class="form-control aa" rows=35 v-model="resultAA"></textarea>
+          </div>
+        </div>
       </div>
     </div>
   </div>
