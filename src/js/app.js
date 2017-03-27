@@ -127,10 +127,14 @@ var app = new Vue({
                 this.grayscaleImage.width = img.width;
                 this.grayscaleImage.height = img.height;
                 // convert ndarray
-                let dataTensor = ndarray(new Float32Array(pixels.data), [pixels.width, pixels.height]);
-                // console.log('dataTensor', dataTensor)
+                let dataSourceTensor = ndarray(new Float32Array(pixels.data), [pixels.width, pixels.height, 4]);
+                // console.log('dataSourceTensor', dataSourceTensor)
                 // normalization (0.0 ~ 1.0)
+                let dataTensor = ndarray(new Float32Array(pixels.width * pixels.height), [pixels.width, pixels.height, 1]);
+                ops.assign(dataTensor.pick(null, null, 0), dataSourceTensor.pick(null, null, 0))
+                // console.log('dataTensor', dataTensor)
                 ops.divseq(dataTensor, 255);
+                // console.log('dataTensor', dataTensor)
                 // calc AA line count
                 let lineNum = Math.floor((pixels.height - 48) / 18);
                 console.log('line count', lineNum);
@@ -182,14 +186,14 @@ var app = new Vue({
                            y.set(1, 0);
                         }
 
-                        console.log('y', y);
+                        // console.log('y', y);
 
                         let predict = ops.argmax(y);
-                        console.log('predict', predict);
+                        // console.log('predict', predict);
                         let char = this.charListFile[predict][0];
                         let char_width = this.charListFile[predict][1];
-                        console.log('char', '\'' + char + '\'')
-                        console.log('char_width', char_width)
+                        // console.log('char', '\'' + char + '\'')
+                        // console.log('char_width', char_width)
 
                         this.resultAA += char;
                         
@@ -201,12 +205,10 @@ var app = new Vue({
                         } else {
                             penalty = 0;
                         }
-                        await this.sleep(10);
-                        console.log('processing: ', i, ', ', end);
-                        break;
+                        await this.sleep(3);
+                        // console.log('processing: ', i, ', ', end);
                     }
                     this.resultAA += '\n';
-                    break;
                 }
             } catch (err) {
                 console.error('model: ', err.message);
