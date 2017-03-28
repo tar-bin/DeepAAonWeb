@@ -1,8 +1,9 @@
-const KerasJS = require('../lib/keras')
+// JS Module
+import * as KerasJS from 'keras-js'
 import Vue from 'vue'
-import ndarray from 'ndarray';
-import ops from 'ndarray-ops';
-
+import ndarray from 'ndarray'
+import ops from 'ndarray-ops'
+// JSON
 import CharListFile from  '../char_list.json'
 
 var app = new Vue({
