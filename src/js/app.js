@@ -66,7 +66,7 @@ var app = new Vue({
         },
         canvasAddMargin: function(canvas) {
             var img = new Image();
-            img.onload = function() {
+            img.onload = () => {
                 var ctx = canvas.getContext("2d");
                 canvas.width = (24 + 17) + img.width + (24 + 17);
                 canvas.height = 24 + img.height + 24;
@@ -74,19 +74,19 @@ var app = new Vue({
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(img, 24 + 17, 24);
                 this.grayscaleImage.URL = canvas.toDataURL();
-            }.bind(this);
+            };
             img.src = canvas.toDataURL();
         },
         canvasResize: function(canvas, scale_ratio) {
             var img = new Image();
-            img.onload = function() {
+            img.onload = () => {
                 var ctx = canvas.getContext("2d");
                 canvas.width *= scale_ratio;
                 canvas.height *= scale_ratio;
                 ctx.scale(scale_ratio, scale_ratio);
                 ctx.drawImage(img, 0, 0);
                 this.canvasAddMargin(canvas);
-            }.bind(this);
+            };
             img.src = canvas.toDataURL();
         },
         grayscale: function(imageURL) {
@@ -94,7 +94,7 @@ var app = new Vue({
                 // get image
                 var canvas = document.createElement("canvas");
                 var img = new Image();
-                img.onload = function() {
+                img.onload = () => {
                     var ctx = canvas.getContext("2d");
                     canvas.width = img.width;
                     canvas.height = img.height;
@@ -126,7 +126,7 @@ var app = new Vue({
                     // update scale
                     let scale_ratio = this.outputAA.width / img.width;
                     this.canvasResize(canvas, scale_ratio);
-                }.bind(this);
+                };
                 img.src = imageURL;
             } catch (err) {
                 console.error('grayscale: ', err.message);
