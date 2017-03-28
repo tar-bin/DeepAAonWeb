@@ -108,11 +108,18 @@ var app = new Vue({
                     // grayscaling
                     for (var y = 0; y < pixels.height; y++) {
                         for (var x = 0; x < pixels.width; x++) {
-                            var i = (y * 4) * pixels.width + x * 4;
-                            var rgb = parseInt((pixels.data[i] + pixels.data[i + 1] + pixels.data[i + 2]) / 3, 10);
-                            pixels.data[i] = rgb;
-                            pixels.data[i + 1] = rgb;
-                            pixels.data[i + 2] = rgb;
+                            // sampling pixel(RGBA)
+                            var pos = (y * pixels.width + x) * 4;
+                            // RGB to grayscale color
+                            var grayScalePixelColor = parseInt(
+                                0.299 * pixels.data[pos] +
+                                0.587 * pixels.data[pos + 1] +
+                                0.114 * pixels.data[pos + 2], 10);
+                            // update pixel data
+                            pixels.data[pos]     = grayScalePixelColor; // R
+                            pixels.data[pos + 1] = grayScalePixelColor; // G
+                            pixels.data[pos + 2] = grayScalePixelColor; // B
+                            pixels.data[pos + 3] = 255;                 // A
                         }
                     }
                     ctx.putImageData(pixels, 0, 0);
