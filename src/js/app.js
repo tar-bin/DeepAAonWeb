@@ -167,35 +167,35 @@ new Vue({
                 this.modelInterrupt = false;
                 // clear output AA
                 this.resultAA = '';
+
                 // get input data
-                const canvas = document.createElement("canvas");
-                const ctx = canvas.getContext("2d");
-                const img = new Image();
-                img.src = this.grayscaleImage.URL;
-                canvas.width = img.width;
-                canvas.height = img.height;
-                ctx.drawImage(img, 0, 0);
-                const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                // update grayscaleImage info
-                this.grayscaleImage.width = img.width;
-                this.grayscaleImage.height = img.height;
-                // convert ndarray (width * height * RGBA)
-                let dataSourceTensor = ndarray(new Float32Array(pixels.data), [pixels.width, pixels.height, 4]);
-                // console.log('dataSourceTensor', dataSourceTensor)
-                // normalization (0.0 ~ 1.0)
-                let dataTensor = ndarray(new Float32Array(pixels.width * pixels.height), [pixels.width, pixels.height, 1]);
-                ops.assign(dataTensor.pick(null, null, 0), dataSourceTensor.pick(null, null, 0))
-                // console.log('dataTensor', dataTensor)
-                ops.divseq(dataTensor, 255);
-                // console.log('dataTensor', dataTensor)
-                // calc AA line count
-                let lineNum = Math.floor((pixels.height - 48) / 18);
-                this.outputAA.lineMaxNum = lineNum;
-                console.log('line count', lineNum);
+                let dataTensor = undefined;
+                let lineNum = undefined;
+                {
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d");
+                    const img = new Image();
+                    img.src = this.grayscaleImage.URL;
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    // update grayscaleImage info
+                    this.grayscaleImage.width = img.width;
+                    this.grayscaleImage.height = img.height;
+                    // convert ndarray (width * height * RGBA)
+                    const dataSourceTensor = ndarray(new Float32Array(pixels.data), [pixels.width, pixels.height, 4]);
+                    // normalization (0.0 ~ 1.0)
+                    dataTensor = ndarray(new Float32Array(pixels.width * pixels.height), [pixels.width, pixels.height, 1]);
+                    ops.assign(dataTensor.pick(null, null, 0), dataSourceTensor.pick(null, null, 0))
+                    ops.divseq(dataTensor, 255);
+                    // calc AA line count
+                    lineNum = Math.floor((pixels.height - 48) / 18);
+                    this.outputAA.lineMaxNum = lineNum;
+                }
 
                 // wait until model is ready
                 await this.model.ready();
-                console.log('model ready!');
 
                 let float32concat = function(first, second) {
                     let result = new Float32Array(first.length + second.length);
