@@ -188,9 +188,10 @@ new Vue({
                     this.grayscaleImage.height = img.height;
                     // convert ndarray (width * height * RGBA)
                     const dataSourceTensor = ndarray(new Float32Array(pixels.data), [pixels.width, pixels.height, 4]);
-                    // normalization (0.0 ~ 1.0)
                     dataTensor = ndarray(new Float32Array(pixels.width * pixels.height), [pixels.width, pixels.height, 1]);
+                    // pick grayscale data
                     ops.assign(dataTensor.pick(null, null, 0), dataSourceTensor.pick(null, null, 0))
+                    // normalization (0.0 ~ 1.0)
                     ops.divseq(dataTensor, 255);
                     // calc AA line count
                     MaxlineNum = Math.floor((pixels.height - 48) / 18);
