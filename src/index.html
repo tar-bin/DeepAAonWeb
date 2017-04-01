@@ -70,25 +70,27 @@ body {
       <div class="col-md-6">
         <div class="row">
           <div class="row">
-            <div class="col-md-9">
-              <h3>Line Image</h3>
-              <img class="img-thumbnail" :src="previewLineImage.URL">
+            <div class="col-md-10">
+              <div class="panel panel-default" style="margin-top: 10px">
+                <div class="panel-heading">Line Image</div>
+                <div class="panel-body">
+                  <img class="img-thumbnail" :src="previewLineImage.URL">
+                </div>
+              </div>
             </div>
-            <div class="col-md-3">
-              <h3>Patch Image</h3>
-              <img class="img-thumbnail" :src="previewPatchImage.URL">
+            <div class="col-md-2">
+              <div class="panel panel-default" style="margin-top: 10px">
+                <div class="panel-heading">Patch Image</div>
+                <div class="panel-body">
+                  <img class="img-thumbnail" :src="previewPatchImage.URL">
+                </div>
+              </div>
             </div>
           </div>
-          <div class="row" style="margin-top: 10px">
-            <div class="container-fluid">
-              <div class="col-md-10">
-                <h4>Output AA {{ progressMessage }}</h4>
-              </div>
-              <div class="col-md-2">
-                <button class="btn btn-default" :data-clipboard-text="resultAA">Copy to clipboard</button>
-              </div>
-            </div>
-            <div class="container-fluid">
+          <div class="panel panel-default">
+            <div class="panel-heading">Output AA {{ progressMessage }}</div>
+            <div class="panel-body">
+              <button class="btn btn-default" :data-clipboard-text="resultAA">Copy to clipboard</button>
               <textarea id="result_aa" class="form-control aa" rows=30 v-model="resultAA"></textarea>
             </div>
           </div>
