@@ -24,6 +24,10 @@ body {
     -webkit-transition: none !important;
     transition: none !important;
 }
+
+[v-cloak] {
+  display: none;
+}
 </style>
 
 <div id="app" class="container-fluid">
@@ -31,7 +35,7 @@ body {
     <div id="app" class="container-fluid">
       <div class="navbar-header">
         <a class="navbar-brand" href="#">DeepAA on Web</a>
-        <div class="navbar-text" v-if="modelLoading">
+        <div class="navbar-text" v-if="modelLoading" v-cloak>
           Model Loading...{{ loadingProgress }}%
         </div>
       </div>
@@ -48,7 +52,7 @@ body {
     </div>
     <div class="col-xs-6 col-md-6">
       <div class="panel panel-default">
-        <div class="panel-heading">
+        <div class="panel-heading" v-cloak>
           Original Image {{ inputImage.width }} x {{ inputImage.height }}
         </div>
         <div class="panel-body">
@@ -63,7 +67,7 @@ body {
     </div>
     <div class="col-xs-6 col-md-6">
       <div class="panel panel-default">
-        <div class="panel-heading">
+        <div class="panel-heading" v-cloak>
           Input Image {{ grayscaleImage.width }} x {{ grayscaleImage.height }}
         </div>
         <div class="panel-body">
@@ -84,13 +88,13 @@ body {
       <div class="panel-body">
         <div class="row">
           <div class="col-xs-2 col-md-2">
-            <p class="text-center">
+            <p class="text-center" v-cloak>
               {{ '[' + outputAA.currentLineNum + ' / ' + outputAA.maxLineNum + '][' + outputAA.linePercentage + '%]'}}
             </p>
           </div>
           <div class="col-xs-10 col-md-10">
             <div class="progress">
-              <div class="progress-bar" v-bind:style="{ width: outputAA.totalPercentage + '%' }">
+              <div class="progress-bar" v-bind:style="{ width: outputAA.totalPercentage + '%' }" v-cloak>
                 {{ progressMessage }}
               </div>
             </div>
