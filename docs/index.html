@@ -1,7 +1,5 @@
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-<!-- Optional theme -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 
 <style>
 @font-face{
@@ -21,6 +19,11 @@
 body {
    padding-top: 70px;
 }
+
+.progress-bar {
+    -webkit-transition: none !important;
+    transition: none !important;
+}
 </style>
 
 <div id="app" class="container-fluid">
@@ -38,56 +41,77 @@ body {
       </ul>
     </div>
   </nav>
-  <div class="row">
-    <div class="container-fluid">
-      <form class="form-inline">
-        <div class="form-group">
-          <input type="file" @change="onFileChange">
+  <div class="col-md-6">
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Original Image {{ inputImage.width }} x {{ inputImage.height }}
         </div>
-        <div class="form-group">
-          <label for="Output">Output Width:</label>
-          <input v-model="outputAA.width" type="text" class="form-control" id="outputAASize" placeholder="出力横幅">
-        </div>
-      </form>
-    </div>
-  </div>
-  <div class="row">
-    <div class="container-fluid">
-      <div class="col-md-6">
-        <div class="row">
-          <div class="col-md-6">
-            <div class="row">
-              <h3>Original Image {{ inputImage.width }} x {{ inputImage.height }}</h3>
+        <div class="panel-body">
+          <form class="form-inline">
+            <div class="form-group">
+              <input type="file" @change="onFileChange">
             </div>
-            <div class="row">
-              <img id="img-input" class="img-thumbnail" :src="inputImage.URL" v-on:load="inputImageLoad">
-            </div>
-          </div>
-          <div class="col-md-6">
-            <h3>Gray Scale & Resize Image {{ grayscaleImage.width }} x {{ grayscaleImage.height }}</h3>
-            <img id="img-grayscale" class="img-thumbnail" :src="grayscaleImage.URL" v-on:load="grayscaleImageLoad">
-          </div>
+          </form>
+          <img id="img-input" class="img-thumbnail" :src="inputImage.URL" v-on:load="inputImageLoad">
         </div>
       </div>
-      <div class="col-md-6">
+    </div>
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Input Image {{ grayscaleImage.width }} x {{ grayscaleImage.height }}
+        </div>
+        <div class="panel-body">
+          <form class="form-inline">
+            <div class="form-group">
+              <label for="Output">Output Width:</label>
+              <input v-model="outputAA.width" type="text" class="form-control" id="outputAASize" placeholder="出力横幅">
+            </div>
+          </form>
+          <img id="img-grayscale" class="img-thumbnail" :src="grayscaleImage.URL" v-on:load="grayscaleImageLoad">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">Output AA</div>
+      <div class="panel-body">
         <div class="row">
-          <div class="row">
-            <div class="col-md-9">
-              <h3>Line Image</h3>
-              <img class="img-thumbnail" :src="previewLineImage.URL">
-            </div>
-            <div class="col-md-3">
-              <h3>Patch Image</h3>
-              <img class="img-thumbnail" :src="previewPatchImage.URL">
-            </div>
+          <div class="col-xs-2 col-md-2">
+            <p class="text-center">
+              {{ '[' + outputAA.currentLineNum + ' / ' + outputAA.maxLineNum + '][' + outputAA.linePercentage + '%]'}}
+            </p>
           </div>
-          <div class="row">
-            <div class="container-fluid">
-              <h3>Output AA {{ progressMessage }}</h3>
-              <textarea class="form-control aa" rows=30 v-model="resultAA"></textarea>
+          <div class="col-xs-10 col-md-10">
+            <div class="progress">
+              <div class="progress-bar" v-bind:style="{ width: outputAA.totalPercentage + '%' }">
+                {{ progressMessage }}
+              </div>
             </div>
           </div>
         </div>
+        <div class="row">
+          <div class="col-xs-10 col-md-10">
+            <div class="panel panel-default">
+              <div class="panel-heading">Line Image</div>
+              <div class="panel-body">
+                <img class="img-thumbnail" :src="previewLineImage.URL">
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-2 col-md-2">
+            <div class="panel panel-default">
+              <div class="panel-heading">Patch Image</div>
+              <div class="panel-body">
+                <img class="img-thumbnail" :src="previewPatchImage.URL">
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-default" :data-clipboard-text="resultAA">Copy to clipboard</button>
+        <textarea id="result_aa" class="form-control aa" rows=30 v-model="resultAA"></textarea>
       </div>
     </div>
   </div>
