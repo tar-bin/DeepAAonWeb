@@ -19,6 +19,11 @@
 body {
    padding-top: 70px;
 }
+
+.progress-bar {
+    -webkit-transition: none !important;
+    transition: none !important;
+}
 </style>
 
 <div id="app" class="container-fluid">
@@ -71,10 +76,24 @@ body {
   </div>
   <div class="col-md-6">
     <div class="panel panel-default">
-      <div class="panel-heading">Output AA {{ progressMessage }}</div>
+      <div class="panel-heading">Output AA</div>
       <div class="panel-body">
         <div class="row">
-          <div class="col-md-10">
+          <div class="col-xs-2 col-md-2">
+            <p class="text-center">
+              {{ '[' + outputAA.currentLineNum + ' / ' + outputAA.maxLineNum + '][' + outputAA.linePercentage + '%]'}}
+            </p>
+          </div>
+          <div class="col-xs-10 col-md-10">
+            <div class="progress">
+              <div class="progress-bar" v-bind:style="{ width: outputAA.totalPercentage + '%' }">
+                {{ progressMessage }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-10 col-md-10">
             <div class="panel panel-default">
               <div class="panel-heading">Line Image</div>
               <div class="panel-body">
@@ -82,7 +101,7 @@ body {
               </div>
             </div>
           </div>
-          <div class="col-md-2">
+          <div class="col-xs-2 col-md-2">
             <div class="panel panel-default">
               <div class="panel-heading">Patch Image</div>
               <div class="panel-body">

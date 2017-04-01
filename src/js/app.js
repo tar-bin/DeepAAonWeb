@@ -61,8 +61,9 @@ new Vue({
             height: 0
         },
         outputAA: {
-            lineMaxNum: '-',
-            progressLineNum: '-',
+            maxLineNum: '-',
+            currentLineNum: '-',
+            totalPercentage: 0,
             linePercentage: 0,
             width: 550,
         },
@@ -165,12 +166,14 @@ new Vue({
                 }
                 this.modelRunning = true;
                 this.modelInterrupt = false;
-                // clear output AA
+                // reset status
                 this.resultAA = '';
+                this.outputAA.totalPercentage = 0;
+                this.outputAA.linePercentage = 0;
 
                 // get input data
                 let dataTensor = undefined;
-                let lineNum = undefined;
+                let MaxlineNum = undefined;
                 {
                     const canvas = document.createElement("canvas");
                     const ctx = canvas.getContext("2d");
@@ -190,24 +193,32 @@ new Vue({
                     ops.assign(dataTensor.pick(null, null, 0), dataSourceTensor.pick(null, null, 0))
                     ops.divseq(dataTensor, 255);
                     // calc AA line count
-                    lineNum = Math.floor((pixels.height - 48) / 18);
-                    this.outputAA.lineMaxNum = lineNum;
+                    MaxlineNum = Math.floor((pixels.height - 48) / 18);
+                    this.outputAA.maxLineNum = MaxlineNum;
                 }
 
                 // wait until model is ready
                 await this.model.ready();
 
-                let float32concat = function(first, second) {
+                const float32concat = function(first, second) {
                     let result = new Float32Array(first.length + second.length);
                     result.set(first);
                     result.set(second, first.length);
                     return result;
                 };
 
+                const PERLINE = 1 / MaxlineNum;
+                const updateProgress = (currentLineNum, end) => {
+                    this.outputAA.currentLineNum = currentLineNum;
+                    this.outputAA.linePercentage =
+                        Math.floor(end / dataTensor.shape[0] * 100);
+                    this.outputAA.totalPercentage =
+                        Math.floor(PERLINE * (currentLineNum + end / dataTensor.shape[0]) * 100);
+                };
+
                 // loop each line
-                for (var i = 0; i < lineNum; i++) {
+                for (var i = 0; i < MaxlineNum; i++) {
                     // update progress
-                    this.outputAA.progressLineNum = i;
                     // reshape lineImage
                     let lineImage =
                         dataTensor.data.slice(
@@ -223,7 +234,7 @@ new Vue({
                     let width = 64;
                     while (end <= dataTensor.shape[0]) {
                         // update line progress
-                        this.outputAA.linePercentage = Math.floor(end / dataTensor.shape[0] * 100);
+                        updateProgress(i, end);
                         // reshape
                         let patch_data = new Float32Array();
                         for (var j = 0; j < 64; j++) {
@@ -275,8 +286,9 @@ new Vue({
                     this.resultAA += '\n';
                 }
                 // finish
-                this.outputAA.progressLineNum = lineNum;
+                this.outputAA.currentLineNum = MaxlineNum;
                 this.outputAA.linePercentage = 100;
+                this.outputAA.totalPercentage = 100;
                 this.modelRunning = false;
             } catch (err) {
                 this.modelRunning = false;
@@ -335,12 +347,10 @@ new Vue({
             return this.model.getLoadingProgress();
         },
         progressMessage: function() {
-            let _line = '[' + this.outputAA.progressLineNum + '/' + this.outputAA.lineMaxNum + ']';
-            let _linePercentage = '[' + this.outputAA.linePercentage + '%]';
-            if (this.outputAA.linePercentage == 100) {
-                return '[Complete!]';
+            if (this.outputAA.totalPercentage == 100) {
+                return 'Complete!';
             } else {
-                return _line + _linePercentage;
+                return this.outputAA.totalPercentage + '%';
             }
         }
     }
