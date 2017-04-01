@@ -36,15 +36,6 @@ body {
       </ul>
     </div>
   </nav>
-  <form class="form-inline">
-    <div class="form-group">
-      <input type="file" @change="onFileChange">
-    </div>
-    <div class="form-group">
-      <label for="Output">Output Width:</label>
-      <input v-model="outputAA.width" type="text" class="form-control" id="outputAASize" placeholder="出力横幅">
-    </div>
-  </form>
   <div class="col-md-6">
     <div class="col-md-6">
       <div class="panel panel-default">
@@ -52,6 +43,11 @@ body {
           Original Image {{ inputImage.width }} x {{ inputImage.height }}
         </div>
         <div class="panel-body">
+          <form class="form-inline">
+            <div class="form-group">
+              <input type="file" @change="onFileChange">
+            </div>
+          </form>
           <img id="img-input" class="img-thumbnail" :src="inputImage.URL" v-on:load="inputImageLoad">
         </div>
       </div>
@@ -59,36 +55,42 @@ body {
     <div class="col-md-6">
       <div class="panel panel-default">
         <div class="panel-heading">
-          Gray Scale & Resize Image {{ grayscaleImage.width }} x {{ grayscaleImage.height }}
+          Input Image {{ grayscaleImage.width }} x {{ grayscaleImage.height }}
         </div>
         <div class="panel-body">
+          <form class="form-inline">
+            <div class="form-group">
+              <label for="Output">Output Width:</label>
+              <input v-model="outputAA.width" type="text" class="form-control" id="outputAASize" placeholder="出力横幅">
+            </div>
+          </form>
           <img id="img-grayscale" class="img-thumbnail" :src="grayscaleImage.URL" v-on:load="grayscaleImageLoad">
         </div>
       </div>
     </div>
   </div>
   <div class="col-md-6">
-    <div class="row">
-      <div class="col-md-10">
-        <div class="panel panel-default">
-          <div class="panel-heading">Line Image</div>
-          <div class="panel-body">
-            <img class="img-thumbnail" :src="previewLineImage.URL">
-          </div>
-        </div>
-      </div>
-      <div class="col-md-2">
-        <div class="panel panel-default">
-          <div class="panel-heading">Patch Image</div>
-          <div class="panel-body">
-            <img class="img-thumbnail" :src="previewPatchImage.URL">
-          </div>
-        </div>
-      </div>
-    </div>
     <div class="panel panel-default">
       <div class="panel-heading">Output AA {{ progressMessage }}</div>
       <div class="panel-body">
+        <div class="row">
+          <div class="col-md-10">
+            <div class="panel panel-default">
+              <div class="panel-heading">Line Image</div>
+              <div class="panel-body">
+                <img class="img-thumbnail" :src="previewLineImage.URL">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="panel panel-default">
+              <div class="panel-heading">Patch Image</div>
+              <div class="panel-body">
+                <img class="img-thumbnail" :src="previewPatchImage.URL">
+              </div>
+            </div>
+          </div>
+        </div>
         <button class="btn btn-default" :data-clipboard-text="resultAA">Copy to clipboard</button>
         <textarea id="result_aa" class="form-control aa" rows=30 v-model="resultAA"></textarea>
       </div>
