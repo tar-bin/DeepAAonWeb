@@ -1,17 +1,19 @@
+<title>{{ title }}</title>
+
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
 <style>
 @font-face{
     font-family: 'Saitamaar';
-    src: url('fonts/Saitamaar.eot') format('eot'),
-    url('fonts/Saitamaar.woff2') format('woff'),
-    url('fonts/Saitamaar.ttf') format('truetype');
+    src: url('fonts/Saitamaar.woff2') format('woff2'),
+         url('fonts/Saitamaar.eot') format('eot'),
+         url('fonts/Saitamaar.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 .aa {
-    font-family: 'Saitamaar', 'ＭＳ Ｐゴシック', 'MS PGothic', 'IPAMonaPGothic' !important;
+    font-family: 'ＭＳ Ｐゴシック', 'MS PGothic', 'Saitamaar', 'IPAMonaPGothic' !important;
     line-height:18px;
     font-size:16px;
 }
@@ -25,12 +27,19 @@ body {
     transition: none !important;
 }
 
+#patch-guide {
+  position: absolute;
+  background-color: transparent;
+  padding: 4px;
+}
+
 [v-cloak] {
   display: none;
 }
 </style>
 
 <div id="app" class="container-fluid">
+  <!-- Navi bar -->
   <nav class="navbar navbar-default navbar-fixed-top">
     <div id="app" class="container-fluid">
       <div class="navbar-header">
@@ -45,11 +54,16 @@ body {
       </ul>
     </div>
   </nav>
+  <!-- Main -->
   <div class="col-xs-12 col-md-6">
+    <!-- Info -->
     <div class="alert alert-info" role="alert">
-      ※動作保証はGoogle Chromeのみです。画像を選択、加工後、Startボタンで実行してください。<br>
-      現状、画面をリロードすると進行状況は破棄されますのでご注意ください。
+      <p>・動作保証はGoogle Chromeのみです。画像を選択、加工後、Startボタンで実行してください。</p>
+      <p>・選択された画像はローカルにのみ保持されます。外部サーバーには送信されません。</p>
+      <p>・本ツールによって作成された生成物に関して、本ツール作者は一切の権利を主張しません。</p>
+      <p>・本ツールおよびその生成物を利用したことによるいかなる損害も本ツール作者は一切の責任を負いません。</p>
     </div>
+    <!-- Orignal Image -->
     <div class="col-xs-6 col-md-6">
       <div class="panel panel-default">
         <div class="panel-heading" v-cloak>
@@ -65,6 +79,7 @@ body {
         </div>
       </div>
     </div>
+    <!-- Input Image -->
     <div class="col-xs-6 col-md-6">
       <div class="panel panel-default">
         <div class="panel-heading" v-cloak>
@@ -82,6 +97,7 @@ body {
       </div>
     </div>
   </div>
+  <!-- Output AA -->
   <div class="col-xs-12 col-md-6">
     <div class="panel panel-default">
       <div class="panel-heading">Output AA</div>
@@ -105,9 +121,16 @@ body {
           <div class="col-xs-10 col-md-10">
             <div class="panel panel-default">
               <div class="panel-heading">Line Image</div>
-              <div class="panel-body">
-                <canvas class="img-thumbnail" ref="lineImageCanvas"
-                        :width="previewLineImage.width" :height="previewLineImage.height">
+              <div class="panel-body" style="height: 104">
+                <div style="position: relative">
+                  <canvas class="img-thumbnail" ref="lineImageCanvas"
+                          style="position: absolute"
+                          :width="previewLineImage.width" height="64"></canvas>
+                  <canvas ref="lineImagePatchGuideCanvas"
+                          id="patch-guide"
+                          v-bind:style="{ left: previewLineImage.patchGuidePosX }"
+                          width="64" height="64"></canvas>
+                </div>
               </div>
             </div>
           </div>
@@ -121,8 +144,10 @@ body {
             </div>
           </div>
         </div>
-        <button class="btn btn-default" :data-clipboard-text="resultAA">Copy to clipboard</button>
-        <textarea id="result_aa" class="form-control aa" rows=30 v-model="resultAA"></textarea>
+        <!-- Copy Button -->
+        <button class="btn btn-default" :data-clipboard-text="resultAA.text">Copy to clipboard</button>
+        <!-- Result AA -->
+        <textarea id="result_aa" class="form-control aa" :rows="resultAA.rows" v-model="resultAA.text"></textarea>
       </div>
     </div>
   </div>
