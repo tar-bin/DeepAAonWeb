@@ -156,7 +156,7 @@ new Vue({
                 while (this.modelRunning) {
                     this.modelInterrupt = true;
                     console.log('wait until stopped current process')
-                    await this.sleep(16);
+                    await this.setInterval(16);
                 }
                 this.modelRunning = true;
                 this.modelInterrupt = false;
