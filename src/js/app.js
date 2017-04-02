@@ -11,6 +11,22 @@ import CharListFile from  '../char_list.json'
 // clipboard.js
 var clipboard = new Clipboard('.btn');
 
+const VueTitle = new Vue({
+    el: 'title',
+    data: {
+        progress: 0
+    },
+    computed: {
+        title: function() {
+            if (this.progress != 0) {
+                return '[' + this.progress + '%] DeepAA on Web';
+            } else {
+                return 'DeepAA on Web';
+            }
+        }
+    }
+});
+
 // Vue.js
 new Vue({
     el: '#app',
@@ -334,6 +350,11 @@ new Vue({
         },
         setInterval: async function (ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    },
+    watch: {
+        'outputAA.totalPercentage': function(val, oldVal) {
+            VueTitle.progress = val;
         }
     },
     computed: {
