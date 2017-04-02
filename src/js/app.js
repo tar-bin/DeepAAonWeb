@@ -57,8 +57,6 @@ new Vue({
         },
         previewPatchImage: {
             URL: '',
-            width: 0,
-            height: 0
         },
         outputAA: {
             maxLineNum: '-',
@@ -335,8 +333,11 @@ new Vue({
                 }
             }
             ctx.putImageData(pixels, 0, 0);
-            this.previewPatchImage.width = width;
-            this.previewPatchImage.height = height;
+            // write red rectangle (convert AA area)
+            ctx.beginPath()
+            ctx.strokeStyle = 'red';
+            ctx.strokeRect(24, 24, 16, 16);
+            // update canvas
             this.previewPatchImage.URL = canvas.toDataURL();
         },
         sleep: async function (ms) {
