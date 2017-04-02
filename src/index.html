@@ -25,6 +25,12 @@ body {
     transition: none !important;
 }
 
+#patch-guide {
+  position: absolute;
+  background-color: transparent;
+  padding: 4px;
+}
+
 [v-cloak] {
   display: none;
 }
@@ -105,9 +111,16 @@ body {
           <div class="col-xs-10 col-md-10">
             <div class="panel panel-default">
               <div class="panel-heading">Line Image</div>
-              <div class="panel-body">
-                <canvas class="img-thumbnail" ref="lineImageCanvas"
-                        :width="previewLineImage.width" height="64">
+              <div class="panel-body" style="height: 104">
+                <div style="position: relative">
+                  <canvas class="img-thumbnail" ref="lineImageCanvas"
+                          style="position: absolute"
+                          :width="previewLineImage.width" height="64"></canvas>
+                  <canvas ref="lineImagePatchGuideCanvas"
+                          id="patch-guide"
+                          v-bind:style="{ left: previewLineImage.patchGuidePosX }"
+                          width="64" height="64"></canvas>
+                </div>
               </div>
             </div>
           </div>

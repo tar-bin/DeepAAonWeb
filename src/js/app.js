@@ -51,7 +51,8 @@ new Vue({
             height: 0
         },
         previewLineImage: {
-            width: 632
+            width: 632,
+            patchGuidePosX: 0
         },
         outputAA: {
             maxLineNum: '-',
@@ -219,6 +220,8 @@ new Vue({
                         dataTensor.data.slice(
                             (i * 18) * dataTensor.shape[0],
                             ((i * 18) + 64) * dataTensor.shape[0]);
+                    // update preview image
+                    this.updatePreviewLineImage(lineImage);
 
                     let start = 0;
                     let end = 64;
@@ -270,7 +273,7 @@ new Vue({
                         }
 
                         // update preview image
-                        this.updatePreviewLineImage(lineImage, dataTensor.shape[0], 64, start);
+                        this.previewLineImage.patchGuidePosX = start;
                         this.updatePreviewPatchImage(patch.data);
                         // keep frame interval (16 msec)
                         await timeout;
@@ -288,7 +291,16 @@ new Vue({
                 this.resultAA = err.message;
             }
         },
-        updatePreviewLineImage: function(data, width, height, pos_x) {
+        initLineImagePatchGuideRect: function() {
+            const canvas = this.$refs.lineImagePatchGuideCanvas;
+            const ctx = canvas.getContext("2d");
+            // write blue rectangle (Patch Image Area)
+            ctx.beginPath()
+            ctx.strokeStyle = 'blue';
+            ctx.strokeRect(0, 0, 64, 64);
+            ctx.strokeRect(24, 24, 16, 16);
+        },
+        updatePreviewLineImage: function(data) {
             // update canvas
             const canvas = this.$refs.lineImageCanvas;
             const ctx = canvas.getContext("2d");
@@ -307,12 +319,7 @@ new Vue({
             // write red rectangle (Convert AA Area)
             ctx.beginPath()
             ctx.strokeStyle = 'red';
-            ctx.strokeRect(24, 24, width - (24 * 2), 16);
-            // write blue rectangle (Patch Image Area)
-            ctx.beginPath()
-            ctx.strokeStyle = 'blue';
-            ctx.strokeRect(pos_x, 0, 64, 64);
-            ctx.strokeRect(pos_x + 24, 24, 16, 16);
+            ctx.strokeRect(24, 24, canvas.width - (24 * 2), 16);
         },
         updatePreviewPatchImage: function(data) {
             const canvas = this.$refs.patchImageCanvas;
@@ -349,5 +356,8 @@ new Vue({
                 return this.outputAA.totalPercentage + '%';
             }
         }
+    },
+    mounted: function() {
+        this.initLineImagePatchGuideRect();
     }
 })
