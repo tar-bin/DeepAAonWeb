@@ -236,54 +236,54 @@ new Vue({
 
                     let width = 64;
                     while (end <= dataTensor.shape[0]) {
-                        // set timeout
-                        let timeout = this.setInterval(16);
-                        // update line progress
-                        updateProgress(i, end);
-                        // reshape
-                        let patch_data = new Float32Array();
-                        for (var j = 0; j < 64; j++) {
-                            let line_data = lineImage.slice(
-                                    (j * dataTensor.shape[0]) + start,
-                                    (j * dataTensor.shape[0]) + end);
-                            patch_data = float32concat(patch_data, line_data);
-                        }
-                        let patch = ndarray(new Float32Array(patch_data), [64, 64]);
-                        // predict
-                        const inputData = {
-                            'input_1': patch.data
-                        };
-                        let y = await this.model.predict(inputData);
-                        y = ndarray(y.dense_1);
+                            // set timeout
+                            let timeout = this.setInterval(16);
+                            // update line progress
+                            updateProgress(i, end);
+                            // reshape
+                            let patch_data = new Float32Array([]);
+                            for (var j = 0; j < 64; j++) {
+                                let line_data = lineImage.slice(
+                                        (j * dataTensor.shape[0]) + start,
+                                        (j * dataTensor.shape[0]) + end);
+                                patch_data = float32concat(patch_data, line_data);
+                            }
+                            let patch = ndarray(new Float32Array(patch_data), [64, 64]);
+                            // predict
+                            const inputData = {
+                                'input_1': patch.data
+                            };
+                            let y = await this.model.predict(inputData);
+                            y = ndarray(y.dense_1);
 
-                        if (penalty==1) {
-                           y.set(1, 0);
-                        }
+                            if (penalty==1) {
+                            y.set(1, 0);
+                            }
 
-                        let predict = ops.argmax(y);
-                        let char = this.charListFile[predict][0];
-                        let char_width = this.charListFile[predict][1];
+                            let predict = ops.argmax(y);
+                            let char = this.charListFile[predict][0];
+                            let char_width = this.charListFile[predict][1];
 
-                        this.resultAA.text += char;
-                        
-                        start += char_width;
-                        end += char_width;
+                            this.resultAA.text += char;
+                            
+                            start += char_width;
+                            end += char_width;
 
-                        if (predict==1) {
-                            penalty = 1;
-                        } else {
-                            penalty = 0;
-                        }
-                        if (this.modelInterrupt) {
-                            this.modelRunning = false;
-                            return;
-                        }
+                            if (predict==1) {
+                                penalty = 1;
+                            } else {
+                                penalty = 0;
+                            }
+                            if (this.modelInterrupt) {
+                                this.modelRunning = false;
+                                return;
+                            }
 
-                        // update preview image
-                        this.previewLineImage.patchGuidePosX = start;
-                        this.updatePreviewPatchImage(patch.data);
-                        // keep frame interval (16 msec)
-                        await timeout;
+                            // update preview image
+                            this.previewLineImage.patchGuidePosX = start;
+                            this.updatePreviewPatchImage(patch.data);
+                            // keep frame interval (16 msec)
+                            await timeout;
                     }
                     this.resultAA.text += '\n';
                 }
