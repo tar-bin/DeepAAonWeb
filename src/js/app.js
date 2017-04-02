@@ -217,14 +217,11 @@ new Vue({
 
                 // loop each line
                 for (var i = 0; i < MaxlineNum; i++) {
-                    // update progress
                     // reshape lineImage
                     let lineImage =
                         dataTensor.data.slice(
                             (i * 18) * dataTensor.shape[0],
                             ((i * 18) + 64) * dataTensor.shape[0]);
-                    // console.log('lineImage', lineImage);
-                    this.updatePreviewLineImage(lineImage, dataTensor.shape[0], 64);
 
                     let start = 0;
                     let end = 64;
@@ -242,10 +239,10 @@ new Vue({
                                     (j * dataTensor.shape[0]) + end);
                             patch_data = float32concat(patch_data, line_data);
                         }
-                        // console.log('patch_data', patch_data);
                         let patch = ndarray(new Float32Array(patch_data), [64, 64]);
+                        // update image
+                        this.updatePreviewLineImage(lineImage, dataTensor.shape[0], 64, start);
                         this.updatePreviewPatchImage(patch.data, 64, 64);
-                        // console.log('patch', patch);
                         // predict
                         const inputData = {
                             'input_1': patch.data
@@ -257,14 +254,9 @@ new Vue({
                            y.set(1, 0);
                         }
 
-                        // console.log('y', y);
-
                         let predict = ops.argmax(y);
-                        // console.log('predict', predict);
                         let char = this.charListFile[predict][0];
                         let char_width = this.charListFile[predict][1];
-                        // console.log('char', '\'' + char + '\'')
-                        // console.log('char_width', char_width)
 
                         this.resultAA += char;
                         
@@ -295,7 +287,7 @@ new Vue({
                 this.resultAA = err.message;
             }
         },
-        updatePreviewLineImage: function(data, width, height) {
+        updatePreviewLineImage: function(data, width, height, pos_x) {
             var canvas = document.createElement("canvas");
             var ctx = canvas.getContext("2d");
             canvas.width = width;
@@ -312,10 +304,15 @@ new Vue({
                 }
             }
             ctx.putImageData(pixels, 0, 0);
-            // write red rectangle (convert AA area)
+            // write red rectangle (Convert AA Area)
             ctx.beginPath()
             ctx.strokeStyle = 'red';
             ctx.strokeRect(24, 24, width - (24 * 2), 16);
+            // write blue rectangle (Patch Image Area)
+            ctx.beginPath()
+            ctx.strokeStyle = 'blue';
+            ctx.strokeRect(pos_x, 0, 64, 64);
+            ctx.strokeRect(pos_x + 24, 24, 16, 16);
             // update canvas and info
             this.previewLineImage.width = width;
             this.previewLineImage.height = height;
