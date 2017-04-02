@@ -9,7 +9,7 @@ import Clipboard from 'clipboard'
 import CharListFile from  '../char_list.json'
 
 // clipboard.js
-var clipboard = new Clipboard('.btn');
+new Clipboard('.btn');
 
 const VueTitle = new Vue({
     el: 'title',
