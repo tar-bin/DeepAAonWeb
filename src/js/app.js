@@ -225,6 +225,8 @@ new Vue({
 
                     let width = 64;
                     while (end <= dataTensor.shape[0]) {
+                        // set timeout
+                        let timeout = this.setInterval(16);
                         // update line progress
                         updateProgress(i, end);
                         // reshape
@@ -236,9 +238,6 @@ new Vue({
                             patch_data = float32concat(patch_data, line_data);
                         }
                         let patch = ndarray(new Float32Array(patch_data), [64, 64]);
-                        // update image
-                        this.updatePreviewLineImage(lineImage, dataTensor.shape[0], 64, start);
-                        this.updatePreviewPatchImage(patch.data);
                         // predict
                         const inputData = {
                             'input_1': patch.data
@@ -268,7 +267,12 @@ new Vue({
                             this.modelRunning = false;
                             return;
                         }
-                        await this.sleep(16);
+
+                        // update preview image
+                        this.updatePreviewLineImage(lineImage, dataTensor.shape[0], 64, start);
+                        this.updatePreviewPatchImage(patch.data);
+                        // keep frame interval (16 msec)
+                        await timeout;
                     }
                     this.resultAA += '\n';
                 }
@@ -332,7 +336,7 @@ new Vue({
             ctx.strokeStyle = 'red';
             ctx.strokeRect(24, 24, 16, 16);
         },
-        sleep: async function (ms) {
+        setInterval: async function (ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
     },
