@@ -39,6 +39,7 @@ body {
 </style>
 
 <div id="app" class="container-fluid">
+  <!-- Navi bar -->
   <nav class="navbar navbar-default navbar-fixed-top">
     <div id="app" class="container-fluid">
       <div class="navbar-header">
@@ -53,13 +54,16 @@ body {
       </ul>
     </div>
   </nav>
+  <!-- Main -->
   <div class="col-xs-12 col-md-6">
+    <!-- Info -->
     <div class="alert alert-info" role="alert">
       <p>・動作保証はGoogle Chromeのみです。画像を選択、加工後、Startボタンで実行してください。</p>
       <p>・選択された画像はローカルにのみ保持されます。外部サーバーには送信されません。</p>
       <p>・本ツールによって作成された生成物に関して、本ツール作者は一切の権利を主張しません。</p>
       <p>・本ツールおよびその生成物を利用したことによるいかなる損害も本ツール作者は一切の責任を負いません。</p>
     </div>
+    <!-- Orignal Image -->
     <div class="col-xs-6 col-md-6">
       <div class="panel panel-default">
         <div class="panel-heading" v-cloak>
@@ -75,6 +79,7 @@ body {
         </div>
       </div>
     </div>
+    <!-- Input Image -->
     <div class="col-xs-6 col-md-6">
       <div class="panel panel-default">
         <div class="panel-heading" v-cloak>
@@ -92,6 +97,7 @@ body {
       </div>
     </div>
   </div>
+  <!-- Output AA -->
   <div class="col-xs-12 col-md-6">
     <div class="panel panel-default">
       <div class="panel-heading">Output AA</div>
