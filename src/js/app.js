@@ -83,11 +83,11 @@ new Vue({
             var img = new Image();
             img.onload = () => {
                 var ctx = canvas.getContext("2d");
-                canvas.width = (24 + 17) + img.width + (24 + 17);
-                canvas.height = 24 + img.height + 24;
+                canvas.width = 24 + img.width + (15 + 24);
+                canvas.height = 24 + img.height + (17 + 24);
                 ctx.fillStyle = "white";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(img, 24 + 17, 24);
+                ctx.drawImage(img, 24, 24);
                 this.grayscaleImage.URL = canvas.toDataURL();
             };
             img.src = canvas.toDataURL();
