@@ -61,7 +61,10 @@ new Vue({
             linePercentage: 0,
             width: 550,
         },
-        resultAA: ''
+        resultAA: {
+            text: '',
+            rows: 8
+        }
     },
     methods: {
         onFileChange: function(e) {
@@ -161,7 +164,7 @@ new Vue({
                 this.modelRunning = true;
                 this.modelInterrupt = false;
                 // reset status
-                this.resultAA = '';
+                this.resultAA.text = '';
                 this.outputAA.totalPercentage = 0;
                 this.outputAA.linePercentage = 0;
 
@@ -190,6 +193,7 @@ new Vue({
                     // calc AA line count
                     MaxlineNum = Math.floor((pixels.height - 48) / 18);
                     this.outputAA.maxLineNum = MaxlineNum;
+                    this.resultAA.rows = MaxlineNum + 1;
                     // update line preview canvas size
                     this.previewLineImage.width = img.width;
                 }
@@ -257,7 +261,7 @@ new Vue({
                         let char = this.charListFile[predict][0];
                         let char_width = this.charListFile[predict][1];
 
-                        this.resultAA += char;
+                        this.resultAA.text += char;
                         
                         start += char_width;
                         end += char_width;
@@ -278,7 +282,7 @@ new Vue({
                         // keep frame interval (16 msec)
                         await timeout;
                     }
-                    this.resultAA += '\n';
+                    this.resultAA.text += '\n';
                 }
                 // finish
                 this.outputAA.currentLineNum = MaxlineNum;
