@@ -101,19 +101,22 @@ body {
           </div>
         </div>
         <div class="row">
+          <!-- Line Image -->
           <div class="col-xs-10 col-md-10">
             <div class="panel panel-default">
               <div class="panel-heading">Line Image</div>
               <div class="panel-body">
-                <img class="img-thumbnail" :src="previewLineImage.URL">
+                <canvas class="img-thumbnail" id="line-image-canvas"
+                        :width="previewLineImage.width" :height="previewLineImage.height">
               </div>
             </div>
           </div>
+          <!-- Patch Image -->
           <div class="col-xs-2 col-md-2">
             <div class="panel panel-default">
               <div class="panel-heading">Patch Image</div>
               <div class="panel-body">
-                <img class="img-thumbnail" :src="previewPatchImage.URL">
+                <canvas class="img-thumbnail" width="64" height="64" id="patch-image-canvas">
               </div>
             </div>
           </div>

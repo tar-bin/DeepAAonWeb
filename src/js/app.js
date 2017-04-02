@@ -51,12 +51,8 @@ new Vue({
             height: 0
         },
         previewLineImage: {
-            URL: '',
-            width: 0,
-            height: 0
-        },
-        previewPatchImage: {
-            URL: '',
+            width: 632,
+            height: 64
         },
         outputAA: {
             maxLineNum: '-',
@@ -242,7 +238,7 @@ new Vue({
                         let patch = ndarray(new Float32Array(patch_data), [64, 64]);
                         // update image
                         this.updatePreviewLineImage(lineImage, dataTensor.shape[0], 64, start);
-                        this.updatePreviewPatchImage(patch.data, 64, 64);
+                        this.updatePreviewPatchImage(patch.data);
                         // predict
                         const inputData = {
                             'input_1': patch.data
@@ -288,7 +284,11 @@ new Vue({
             }
         },
         updatePreviewLineImage: function(data, width, height, pos_x) {
-            var canvas = document.createElement("canvas");
+            // update canvas and info
+            this.previewLineImage.width = width;
+            this.previewLineImage.height = height;
+            // update canvas
+            var canvas = document.getElementById("line-image-canvas");
             var ctx = canvas.getContext("2d");
             canvas.width = width;
             canvas.height = height;
@@ -313,16 +313,10 @@ new Vue({
             ctx.strokeStyle = 'blue';
             ctx.strokeRect(pos_x, 0, 64, 64);
             ctx.strokeRect(pos_x + 24, 24, 16, 16);
-            // update canvas and info
-            this.previewLineImage.width = width;
-            this.previewLineImage.height = height;
-            this.previewLineImage.URL = canvas.toDataURL();
         },
-        updatePreviewPatchImage: function(data, width, height) {
-            var canvas = document.createElement("canvas");
+        updatePreviewPatchImage: function(data) {
+            var canvas = document.getElementById("patch-image-canvas");
             var ctx = canvas.getContext("2d");
-            canvas.width = width;
-            canvas.height = height;
             var pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
             for (var y = 0; y < pixels.height; y++) {
                 for (var x = 0; x < pixels.width; x++) {
@@ -339,8 +333,6 @@ new Vue({
             ctx.beginPath()
             ctx.strokeStyle = 'red';
             ctx.strokeRect(24, 24, 16, 16);
-            // update canvas
-            this.previewPatchImage.URL = canvas.toDataURL();
         },
         sleep: async function (ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
