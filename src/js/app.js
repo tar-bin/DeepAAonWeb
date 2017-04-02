@@ -288,10 +288,8 @@ new Vue({
             this.previewLineImage.width = width;
             this.previewLineImage.height = height;
             // update canvas
-            var canvas = document.getElementById("line-image-canvas");
+            var canvas = this.$refs.lineImageCanvas;
             var ctx = canvas.getContext("2d");
-            canvas.width = width;
-            canvas.height = height;
             var pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
             for (var y = 0; y < pixels.height; y++) {
                 for (var x = 0; x < pixels.width; x++) {
@@ -315,7 +313,7 @@ new Vue({
             ctx.strokeRect(pos_x + 24, 24, 16, 16);
         },
         updatePreviewPatchImage: function(data) {
-            var canvas = document.getElementById("patch-image-canvas");
+            var canvas = this.$refs.patchImageCanvas;
             var ctx = canvas.getContext("2d");
             var pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
             for (var y = 0; y < pixels.height; y++) {
