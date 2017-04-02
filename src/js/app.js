@@ -312,6 +312,11 @@ new Vue({
                 }
             }
             ctx.putImageData(pixels, 0, 0);
+            // write red rectangle (convert AA area)
+            ctx.beginPath()
+            ctx.strokeStyle = 'red';
+            ctx.strokeRect(24, 24, width - (24 * 2), 16);
+            // update canvas and info
             this.previewLineImage.width = width;
             this.previewLineImage.height = height;
             this.previewLineImage.URL = canvas.toDataURL();
