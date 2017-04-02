@@ -288,13 +288,13 @@ new Vue({
             this.previewLineImage.width = width;
             this.previewLineImage.height = height;
             // update canvas
-            var canvas = this.$refs.lineImageCanvas;
-            var ctx = canvas.getContext("2d");
-            var pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            for (var y = 0; y < pixels.height; y++) {
-                for (var x = 0; x < pixels.width; x++) {
-                    var i = (y * 4) * pixels.width + x * 4;
-                    var rgb = data[x + y * pixels.width] * 255;
+            const canvas = this.$refs.lineImageCanvas;
+            const ctx = canvas.getContext("2d");
+            const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            for (let y = 0; y < pixels.height; y++) {
+                for (let x = 0; x < pixels.width; x++) {
+                    const i = (y * 4) * pixels.width + x * 4;
+                    const rgb = data[x + y * pixels.width] * 255;
                     pixels.data[i] = rgb;
                     pixels.data[i + 1] = rgb;
                     pixels.data[i + 2] = rgb;
@@ -313,13 +313,13 @@ new Vue({
             ctx.strokeRect(pos_x + 24, 24, 16, 16);
         },
         updatePreviewPatchImage: function(data) {
-            var canvas = this.$refs.patchImageCanvas;
-            var ctx = canvas.getContext("2d");
-            var pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            for (var y = 0; y < pixels.height; y++) {
-                for (var x = 0; x < pixels.width; x++) {
-                    var i = (y * 4) * pixels.width + x * 4;
-                    var rgb = data[x + y * pixels.width] * 255;
+            const canvas = this.$refs.patchImageCanvas;
+            const ctx = canvas.getContext("2d");
+            const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            for (let y = 0; y < pixels.height; y++) {
+                for (let x = 0; x < pixels.width; x++) {
+                    const i = (y * 4) * pixels.width + x * 4;
+                    const rgb = data[x + y * pixels.width] * 255;
                     pixels.data[i] = rgb;
                     pixels.data[i + 1] = rgb;
                     pixels.data[i + 2] = rgb;
