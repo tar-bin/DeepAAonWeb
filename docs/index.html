@@ -24,6 +24,10 @@ body {
     -webkit-transition: none !important;
     transition: none !important;
 }
+
+[v-cloak] {
+  display: none;
+}
 </style>
 
 <div id="app" class="container-fluid">
@@ -31,7 +35,7 @@ body {
     <div id="app" class="container-fluid">
       <div class="navbar-header">
         <a class="navbar-brand" href="#">DeepAA on Web</a>
-        <div class="navbar-text" v-if="modelLoading">
+        <div class="navbar-text" v-if="modelLoading" v-cloak>
           Model Loading...{{ loadingProgress }}%
         </div>
       </div>
@@ -41,10 +45,14 @@ body {
       </ul>
     </div>
   </nav>
-  <div class="col-md-6">
-    <div class="col-md-6">
+  <div class="col-xs-12 col-md-6">
+    <div class="alert alert-info" role="alert">
+      ※動作保証はGoogle Chromeのみです。画像を選択、加工後、Startボタンで実行してください。<br>
+      現状、画面をリロードすると進行状況は破棄されますのでご注意ください。
+    </div>
+    <div class="col-xs-6 col-md-6">
       <div class="panel panel-default">
-        <div class="panel-heading">
+        <div class="panel-heading" v-cloak>
           Original Image {{ inputImage.width }} x {{ inputImage.height }}
         </div>
         <div class="panel-body">
@@ -57,9 +65,9 @@ body {
         </div>
       </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-xs-6 col-md-6">
       <div class="panel panel-default">
-        <div class="panel-heading">
+        <div class="panel-heading" v-cloak>
           Input Image {{ grayscaleImage.width }} x {{ grayscaleImage.height }}
         </div>
         <div class="panel-body">
@@ -74,38 +82,41 @@ body {
       </div>
     </div>
   </div>
-  <div class="col-md-6">
+  <div class="col-xs-12 col-md-6">
     <div class="panel panel-default">
       <div class="panel-heading">Output AA</div>
       <div class="panel-body">
         <div class="row">
           <div class="col-xs-2 col-md-2">
-            <p class="text-center">
+            <p class="text-center" v-cloak>
               {{ '[' + outputAA.currentLineNum + ' / ' + outputAA.maxLineNum + '][' + outputAA.linePercentage + '%]'}}
             </p>
           </div>
           <div class="col-xs-10 col-md-10">
             <div class="progress">
-              <div class="progress-bar" v-bind:style="{ width: outputAA.totalPercentage + '%' }">
+              <div class="progress-bar" v-bind:style="{ width: outputAA.totalPercentage + '%' }" v-cloak>
                 {{ progressMessage }}
               </div>
             </div>
           </div>
         </div>
         <div class="row">
+          <!-- Line Image -->
           <div class="col-xs-10 col-md-10">
             <div class="panel panel-default">
               <div class="panel-heading">Line Image</div>
               <div class="panel-body">
-                <img class="img-thumbnail" :src="previewLineImage.URL">
+                <canvas class="img-thumbnail" ref="lineImageCanvas"
+                        :width="previewLineImage.width" :height="previewLineImage.height">
               </div>
             </div>
           </div>
+          <!-- Patch Image -->
           <div class="col-xs-2 col-md-2">
             <div class="panel panel-default">
               <div class="panel-heading">Patch Image</div>
               <div class="panel-body">
-                <img class="img-thumbnail" :src="previewPatchImage.URL">
+                <canvas class="img-thumbnail" width="64" height="64" ref="patchImageCanvas">
               </div>
             </div>
           </div>
