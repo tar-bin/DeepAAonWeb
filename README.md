@@ -1,6 +1,10 @@
 # DeepAAonWeb
 DeepAA front-end on Web
 
+# Model Data
+
+[OsciiArt/DeepAA: make Ascii Art by Deep Learing (MIT License)](https://github.com/OsciiArt/DeepAA)
+
 ## Dependency
 ### Library
 
