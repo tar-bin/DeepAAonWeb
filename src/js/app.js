@@ -51,8 +51,7 @@ new Vue({
             height: 0
         },
         previewLineImage: {
-            width: 632,
-            height: 64
+            width: 632
         },
         outputAA: {
             maxLineNum: '-',
@@ -190,6 +189,8 @@ new Vue({
                     // calc AA line count
                     MaxlineNum = Math.floor((pixels.height - 48) / 18);
                     this.outputAA.maxLineNum = MaxlineNum;
+                    // update line preview canvas size
+                    this.previewLineImage.width = img.width;
                 }
 
                 // wait until model is ready
@@ -288,9 +289,6 @@ new Vue({
             }
         },
         updatePreviewLineImage: function(data, width, height, pos_x) {
-            // update canvas and info
-            this.previewLineImage.width = width;
-            this.previewLineImage.height = height;
             // update canvas
             const canvas = this.$refs.lineImageCanvas;
             const ctx = canvas.getContext("2d");
