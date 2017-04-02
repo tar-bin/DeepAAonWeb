@@ -279,7 +279,7 @@ new Vue({
             } catch (err) {
                 this.modelRunning = false;
                 console.error('model: ', err.message);
-                this.resultAA = err.message;
+                this.resultAA.text = err.message;
             }
         },
         initLineImagePatchGuideRect: function() {
