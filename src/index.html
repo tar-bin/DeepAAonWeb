@@ -86,10 +86,11 @@ body {
           Input Image {{ grayscaleImage.width }} x {{ grayscaleImage.height }}
         </div>
         <div class="panel-body">
-          <form class="form-inline">
+          <form class="form-inline" onsubmit="return false;">
             <div class="form-group">
-              <label for="Output">Output Width:</label>
-              <input v-model="outputAA.width" type="text" class="form-control" id="outputAASize" placeholder="出力横幅">
+              <label for="outputAASize">Output Width:</label>
+              <input v-model="outputAA.width" type="text" class="form-control" id="outputAASize"
+                     placeholder="出力横幅" maxlength="3" pattern="^[0-9]+$" required>
             </div>
           </form>
           <img id="img-grayscale" class="img-thumbnail" :src="grayscaleImage.URL" v-on:load="grayscaleImageLoad">
