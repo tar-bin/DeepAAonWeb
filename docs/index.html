@@ -86,13 +86,14 @@ body {
           Input Image {{ grayscaleImage.width }} x {{ grayscaleImage.height }}
         </div>
         <div class="panel-body">
-          <form class="form-inline">
+          <form class="form-inline" onsubmit="return false;">
             <div class="form-group">
-              <label for="Output">Output Width:</label>
-              <input v-model="outputAA.width" type="text" class="form-control" id="outputAASize" placeholder="出力横幅">
+              <label for="outputAASize">Output Width:</label>
+              <input v-model="outputAA.width" type="text" class="form-control" id="outputAASize"
+                     placeholder="出力横幅" maxlength="3" pattern="^[0-9]+$" required>
             </div>
           </form>
-          <img id="img-grayscale" class="img-thumbnail" :src="grayscaleImage.URL" v-on:load="grayscaleImageLoad">
+          <img id="img-grayscale" class="img-thumbnail" :src="grayscaleImage.URL">
         </div>
       </div>
     </div>
@@ -103,12 +104,16 @@ body {
       <div class="panel-heading">Output AA</div>
       <div class="panel-body">
         <div class="row">
+          <div class="col-xs-1 col-md-1">
+            <!-- Start Button -->
+            <button class="btn btn-default" @click="onClickConvertAAStart">Start</button>
+          </div>
           <div class="col-xs-2 col-md-2">
             <p class="text-center" v-cloak>
               {{ '[' + outputAA.currentLineNum + ' / ' + outputAA.maxLineNum + '][' + outputAA.linePercentage + '%]'}}
             </p>
           </div>
-          <div class="col-xs-10 col-md-10">
+          <div class="col-xs-9 col-md-9">
             <div class="progress">
               <div class="progress-bar" v-bind:style="{ width: outputAA.totalPercentage + '%' }" v-cloak>
                 {{ progressMessage }}
