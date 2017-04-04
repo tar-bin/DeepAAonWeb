@@ -71,91 +71,102 @@ new Vue({
     },
     methods: {
         onFileChange: function(e) {
-            let files = e.target.files || e.dataTransfer.files;
+            const files = e.target.files || e.dataTransfer.files;
             if (!files.length) {
                 return;
             }
             this.createImage(files[0]);
         },
         createImage: function(file) {
-            var image = new Image();
-            var reader = new FileReader();
+            const reader = new FileReader();
             reader.onload = (e) => {
                 this.inputImage.URL = e.target.result;
             };
             reader.readAsDataURL(file);
         },
-        canvasAddMargin: function(canvas) {
-            var img = new Image();
-            img.onload = () => {
-                var ctx = canvas.getContext("2d");
-                canvas.width = 24 + img.width + (15 + 24);
-                canvas.height = 24 + img.height + (17 + 24);
-                ctx.fillStyle = "white";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(img, 24, 24);
-                this.grayscaleImage.URL = canvas.toDataURL();
-            };
-            img.src = canvas.toDataURL();
-        },
         canvasResize: function(canvas, scale_ratio) {
-            var img = new Image();
-            img.onload = () => {
-                var ctx = canvas.getContext("2d");
-                canvas.width *= scale_ratio;
-                canvas.height *= scale_ratio;
-                ctx.scale(scale_ratio, scale_ratio);
-                ctx.drawImage(img, 0, 0);
-                this.canvasAddMargin(canvas);
-            };
-            img.src = canvas.toDataURL();
+            return new Promise(resolve => {
+                const img = new Image();
+                img.onload = () => {
+                    const ctx = canvas.getContext("2d");
+                    canvas.width *= scale_ratio;
+                    canvas.height *= scale_ratio;
+                    ctx.scale(scale_ratio, scale_ratio);
+                    ctx.drawImage(img, 0, 0);
+                    // update grayscaleImage info
+                    this.grayscaleImage.width = canvas.width;
+                    this.grayscaleImage.height = canvas.height;
+                    resolve(canvas.toDataURL());
+                };
+                img.src = canvas.toDataURL();
+            });
         },
         grayscale: function(imageURL) {
-            try {
-                // get image
-                var canvas = document.createElement("canvas");
-                var img = new Image();
-                img.onload = () => {
-                    var ctx = canvas.getContext("2d");
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    // draw image to canvas
-                    ctx.drawImage(img, 0, 0);
-                    // get image data
-                    var pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    // update input image info
-                    this.inputImage.width = img.width;
-                    this.inputImage.height = img.height;
-                    // grayscaling
-                    for (var y = 0; y < pixels.height; y++) {
-                        for (var x = 0; x < pixels.width; x++) {
-                            // sampling pixel(RGBA)
-                            var pos = (y * pixels.width + x) * 4;
-                            // RGB to grayscale color
-                            var grayScalePixelColor = parseInt(
-                                0.299 * pixels.data[pos] +
-                                0.587 * pixels.data[pos + 1] +
-                                0.114 * pixels.data[pos + 2], 10);
-                            // update pixel data
-                            pixels.data[pos]     = grayScalePixelColor; // R
-                            pixels.data[pos + 1] = grayScalePixelColor; // G
-                            pixels.data[pos + 2] = grayScalePixelColor; // B
-                            pixels.data[pos + 3] = 255;                 // A
+            return new Promise(resolve => {
+                try {
+                    // get image
+                    const canvas = document.createElement("canvas");
+                    const img = new Image();
+                    img.onload = async () => {
+                        const ctx = canvas.getContext("2d");
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        // draw image to canvas
+                        ctx.drawImage(img, 0, 0);
+                        // get image data
+                        const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        // update input image info
+                        this.inputImage.width = img.width;
+                        this.inputImage.height = img.height;
+                        // grayscaling
+                        for (let y = 0; y < pixels.height; y++) {
+                            for (let x = 0; x < pixels.width; x++) {
+                                // sampling pixel(RGBA)
+                                const pos = (y * pixels.width + x) * 4;
+                                // RGB to grayscale color
+                                const grayScalePixelColor = parseInt(
+                                    0.299 * pixels.data[pos] +
+                                    0.587 * pixels.data[pos + 1] +
+                                    0.114 * pixels.data[pos + 2], 10);
+                                // update pixel data
+                                pixels.data[pos]     = grayScalePixelColor; // R
+                                pixels.data[pos + 1] = grayScalePixelColor; // G
+                                pixels.data[pos + 2] = grayScalePixelColor; // B
+                                pixels.data[pos + 3] = 255;                 // A
+                            }
                         }
-                    }
-                    ctx.putImageData(pixels, 0, 0);
-                    // update scale
-                    let scale_ratio = this.outputAA.width / img.width;
-                    this.canvasResize(canvas, scale_ratio);
-                };
-                img.src = imageURL;
-            } catch (err) {
-                console.error('grayscale: ', err.message);
-                this.resultAA = err.message;
-            }
+                        ctx.putImageData(pixels, 0, 0);
+                        // update scale
+                        let scale_ratio = this.outputAA.width / img.width;
+                        const dataUrl = await this.canvasResize(canvas, scale_ratio);
+                        resolve(dataUrl);
+                    };
+                    img.src = imageURL;
+                } catch (err) {
+                    console.error('grayscale: ', err.message);
+                    this.resultAA = err.message;
+                }
+            });
         },
-        inputImageLoad: function() {
-            this.grayscale(this.inputImage.URL);
+        inputImageLoad: async function() {
+            this.grayscaleImage.URL = await this.grayscale(this.inputImage.URL);
+        },
+        canvasAddMargin: function() {
+            return new Promise(resolve => {
+                const canvas = document.createElement("canvas");
+                const img = new Image();
+                img.onload = () => {
+                    const ctx = canvas.getContext("2d");
+                    canvas.width = 24 + img.width + (15 + 24);
+                    canvas.height = 24 + img.height + (17 + 24);
+                    ctx.fillStyle = "white";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 24, 24);
+                    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    resolve(pixels);
+                };
+                img.src = this.grayscaleImage.URL;
+            });
         },
         onClickConvertAAStart: async function() {
             try {
@@ -175,21 +186,11 @@ new Vue({
                 let dataTensor = undefined;
                 let MaxlineNum = undefined;
                 {
-                    const canvas = document.createElement("canvas");
-                    const ctx = canvas.getContext("2d");
-                    const img = new Image();
-                    img.src = this.grayscaleImage.URL;
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
-                    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    // update grayscaleImage info
-                    this.grayscaleImage.width = img.width;
-                    this.grayscaleImage.height = img.height;
+                    const pixels = await this.canvasAddMargin();
                     // convert ndarray (width * height * RGBA)
                     const dataSourceTensor = ndarray(new Float32Array(pixels.data), [pixels.width, pixels.height, 4]);
                     dataTensor = ndarray(new Float32Array(pixels.width * pixels.height), [pixels.width, pixels.height, 1]);
-                    // pick grayscale data
+                    // pick grayscale data (pick each 'R' data)
                     ops.assign(dataTensor.pick(null, null, 0), dataSourceTensor.pick(null, null, 0))
                     // normalization (0.0 ~ 1.0)
                     ops.divseq(dataTensor, 255);
@@ -198,7 +199,7 @@ new Vue({
                     this.outputAA.maxLineNum = MaxlineNum;
                     this.resultAA.rows = MaxlineNum + 1;
                     // update line preview canvas size
-                    this.previewLineImage.width = img.width;
+                    this.previewLineImage.width = pixels.width;
                 }
 
                 // wait until model is ready
@@ -221,7 +222,7 @@ new Vue({
                 };
 
                 // loop each line
-                for (var i = 0; i < MaxlineNum; i++) {
+                for (let i = 0; i < MaxlineNum; i++) {
                     // reshape lineImage
                     let lineImage =
                         dataTensor.data.slice(
@@ -242,7 +243,7 @@ new Vue({
                             updateProgress(i, end);
                             // reshape
                             let patch_data = new Float32Array([]);
-                            for (var j = 0; j < 64; j++) {
+                            for (let j = 0; j < 64; j++) {
                                 let line_data = lineImage.slice(
                                         (j * dataTensor.shape[0]) + start,
                                         (j * dataTensor.shape[0]) + end);
