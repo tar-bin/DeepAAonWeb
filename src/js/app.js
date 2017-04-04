@@ -157,7 +157,7 @@ new Vue({
         inputImageLoad: function() {
             this.grayscale(this.inputImage.URL);
         },
-        grayscaleImageLoad: async function() {
+        onClickConvertAAStart: async function() {
             try {
                 while (this.modelRunning) {
                     this.modelInterrupt = true;
