@@ -201,6 +201,7 @@ new Vue({
                     this.resultAA.rows = MaxlineNum + 1;
                     // update line preview canvas size
                     this.previewLineImage.width = pixels.width;
+                    await this.setInterval(16); // FIXME
                 }
 
                 const float32concat = function(first, second) {
