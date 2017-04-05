@@ -149,8 +149,14 @@ new Vue({
                 }
             });
         },
-        inputImageLoad: async function() {
+        inputImageUpdate: async function() {
             this.grayscaleImage.URL = await this.grayscale(this.inputImage.URL);
+        },
+        onLoadInputImage: function() {
+            this.inputImageUpdate();
+        },
+        onClickInputImageWidth: function() {
+            this.inputImageUpdate();
         },
         canvasAddMargin: function() {
             return new Promise(resolve => {

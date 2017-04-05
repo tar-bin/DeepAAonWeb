@@ -75,7 +75,7 @@ body {
               <input type="file" @change="onFileChange">
             </div>
           </form>
-          <img id="img-input" class="img-thumbnail" :src="inputImage.URL" v-on:load="inputImageLoad">
+          <img id="img-input" class="img-thumbnail" :src="inputImage.URL" @load="onLoadInputImage">
         </div>
       </div>
     </div>
@@ -91,6 +91,7 @@ body {
               <label for="outputAASize">Output Width:</label>
               <input v-model="outputAA.width" type="text" class="form-control" id="outputAASize"
                      placeholder="出力横幅" maxlength="3" pattern="^[0-9]+$" required>
+              <button class="btn btn-default" @click="onClickInputImageWidth">update</button>
             </div>
           </form>
           <img id="img-grayscale" class="img-thumbnail" :src="grayscaleImage.URL">
