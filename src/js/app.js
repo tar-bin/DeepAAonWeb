@@ -34,6 +34,7 @@ new Vue({
         modelLoading: true,
         modelRunning: false,
         modelInterrupt: false,
+        convertPromise: undefined,
         model: new KerasJS.Model({
             filepaths: {
                 model: 'model/model.json',
@@ -168,15 +169,9 @@ new Vue({
                 img.src = this.grayscaleImage.URL;
             });
         },
-        onClickConvertAAStart: async function() {
-            try {
-                while (this.modelRunning) {
-                    this.modelInterrupt = true;
-                    console.log('wait until stopped current process')
-                    await this.setInterval(16);
-                }
+        convertAA: async function() {
+            return new Promise(async resolve => {
                 this.modelRunning = true;
-                this.modelInterrupt = false;
                 // reset status
                 this.resultAA.text = '';
                 this.outputAA.totalPercentage = 0;
@@ -201,9 +196,6 @@ new Vue({
                     // update line preview canvas size
                     this.previewLineImage.width = pixels.width;
                 }
-
-                // wait until model is ready
-                await this.model.ready();
 
                 const float32concat = function(first, second) {
                     let result = new Float32Array(first.length + second.length);
@@ -258,7 +250,7 @@ new Vue({
                         y = ndarray(y.dense_1);
 
                         if (penalty==1) {
-                        y.set(1, 0);
+                            y.set(1, 0);
                         }
 
                         let predict = ops.argmax(y);
@@ -275,8 +267,12 @@ new Vue({
                         } else {
                             penalty = 0;
                         }
+
+                        // interrupt
                         if (this.modelInterrupt) {
                             this.modelRunning = false;
+                            this.modelInterrupt = false;
+                            resolve();
                             return;
                         }
 
@@ -293,9 +289,24 @@ new Vue({
                 this.outputAA.linePercentage = 100;
                 this.outputAA.totalPercentage = 100;
                 this.modelRunning = false;
+                resolve();
+            });
+        },
+        onClickConvertAAStart: async function() {
+            try {
+                // wait until model is ready
+                await this.model.ready();
+                // check convert task is allready running
+                if (this.modelRunning) {
+                    this.modelInterrupt = true;
+                    console.log('wait until stopped current process')
+                    await this.convertPromise;
+                }
+                // convert start
+                this.convertPromise = this.convertAA();
             } catch (err) {
                 this.modelRunning = false;
-                console.error('model: ', err.message);
+                console.error('onClickConvertAAStart', err.message);
                 this.resultAA.text = err.message;
             }
         },
