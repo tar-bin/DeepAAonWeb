@@ -18,7 +18,7 @@ const VueTitle = new Vue({
     },
     computed: {
         title: function() {
-            if (this.progress != 0) {
+            if (this.progress !== 0) {
                 return '[' + this.progress + '%] DeepAA on Web';
             } else {
                 return 'DeepAA on Web';
@@ -32,17 +32,12 @@ new Vue({
     el: '#app',
     data: {
         modelLoading: true,
+        modelInitializing: true,
+        modelLoadingProgress: 0,
+        modelInitProgress: 0,
         modelRunning: false,
         modelInterrupt: false,
         convertPromise: undefined,
-        model: new KerasJS.Model({
-            filepaths: {
-                model: 'model/model.json',
-                weights: 'model/model_weights.buf',
-                metadata: 'model/model_metadata.json',
-            },
-            gpu: true
-        }),
         charListFile: CharListFile,
         inputImage: {
             URL: 'sample-data/test_image.png',
@@ -70,7 +65,28 @@ new Vue({
             rows: 8
         }
     },
+    created: function () {
+        this.model = new KerasJS.Model({
+            filepath: 'model/model_v2.bin',
+            gpu: true
+        });
+
+        this.model.events.on('loadingProgress', this.handleLoadingProgress);
+        this.model.events.on('initProgress', this.handleInitProgress);
+    },
     methods: {
+        handleLoadingProgress(progress) {
+            this.modelLoadingProgress = Math.round(progress);
+            if (progress === 100) {
+                this.modelLoading = false;
+            }
+        },
+        handleInitProgress(progress) {
+            this.modelInitProgress = Math.round(progress);
+            if (progress === 100) {
+                this.modelInitializing = false;
+            }
+        },
         onFileChange: function(e) {
             const files = e.target.files || e.dataTransfer.files;
             if (!files.length) {
@@ -254,7 +270,7 @@ new Vue({
                             'input_1': patch.data
                         };
                         let y = await this.model.predict(inputData);
-                        y = ndarray(y.dense_1);
+                        y = ndarray(y.predictions);
 
                         if (penalty==1) {
                             y.set(1, 0);
@@ -377,11 +393,8 @@ new Vue({
         }
     },
     computed: {
-        loadingProgress: function() {
-            return this.model.getLoadingProgress();
-        },
         progressMessage: function() {
-            if (this.outputAA.totalPercentage == 100) {
+            if (this.outputAA.totalPercentage > 100) {
                 return 'Complete!';
             } else {
                 return this.outputAA.totalPercentage + '%';

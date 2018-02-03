@@ -41,7 +41,7 @@ module.exports = {
     },
     resolve: {
         alias: {
-            'keras-js$': 'keras-js/dist/keras.js',
+            'keras-js$': 'keras-js/dist/keras.min.js',
             'vue$': 'vue/dist/vue.min.js'
         }
     }
