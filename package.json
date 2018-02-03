@@ -19,7 +19,7 @@
   "dependencies": {
     "bootstrap": "^3.3.7",
     "clipboard": "^1.6.1",
-    "keras-js": "^0.1.0",
+    "keras-js": "^1.0.2",
     "ndarray": "^1.0.18",
     "ndarray-ops": "^1.2.2",
     "vue": "^2.2.5"
