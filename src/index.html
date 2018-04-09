@@ -51,7 +51,7 @@ body {
 <div id="app" class="container-fluid">
   <!-- Navi bar -->
   <nav class="navbar navbar-default navbar-fixed-top">
-    <div id="app" class="container-fluid">
+    <div class="container-fluid">
       <div class="navbar-header">
         <a class="navbar-brand" href="#">DeepAA on The Web : Version 2.0</a>
         <div class="navbar-text" v-if="modelLoading" v-cloak>
@@ -122,10 +122,10 @@ body {
         <div class="row">
           <div class="col-xs-1 col-md-1">
             <!-- Start Button -->
-            <button class="btn btn-default" @click="onClickConvertAAStart">Start</button>
+            <button class="btn btn-primary" @click="onClickConvertAAStart">Start</button>
           </div>
           <div class="col-xs-2 col-md-2">
-            <p class="text-center" v-cloak>
+            <p class="text-center" style="margin-left: 10px" v-cloak>
               {{ '[' + outputAA.currentLineNum + ' / ' + outputAA.maxLineNum + '][' + outputAA.linePercentage + '%]'}}
             </p>
           </div>
@@ -135,6 +135,14 @@ body {
                 {{ progressMessage }}
               </div>
             </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="checkbox" style="margin-left: 20px">
+            <label>
+              <input type="checkbox" id="highspeedmode" v-model="highSpeedMode">
+              高速モード(高負荷)
+            </label>
           </div>
         </div>
         <div class="row">

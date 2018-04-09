@@ -63,7 +63,8 @@ new Vue({
         resultAA: {
             text: '',
             rows: 8
-        }
+        },
+        highSpeedMode: false
     },
     created: function () {
         this.model = new KerasJS.Model({
@@ -236,6 +237,14 @@ new Vue({
                         Math.floor(PERLINE * (currentLineNum + end / dataTensor.shape[0]) * 100);
                 };
 
+                const getInterval = () => {
+                    if (this.highSpeedMode) {
+                        return this.setInterval(1);
+                    } else {
+                        return this.setInterval(16);
+                    }
+                };
+
                 // loop each line
                 for (let i = 0; i < MaxlineNum; i++) {
                     // reshape lineImage
@@ -253,7 +262,7 @@ new Vue({
                     let width = 64;
                     while (end <= dataTensor.shape[0]) {
                         // set timeout
-                        let timeout = this.setInterval(16);
+                        let timeout = getInterval();
                         // update line progress
                         updateProgress(i, end);
                         // reshape
@@ -390,6 +399,9 @@ new Vue({
     watch: {
         'outputAA.totalPercentage': function(val, oldVal) {
             VueTitle.progress = val;
+        },
+        'highSpeedMode': function (val, oldVal) {
+            console.debug("hs" + val);
         }
     },
     computed: {
