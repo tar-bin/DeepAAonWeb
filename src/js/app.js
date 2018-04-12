@@ -6,7 +6,7 @@ import Vue from 'vue'
 import Clipboard from 'clipboard'
 
 // JSON
-import CharListFile from  '../char_list.json'
+import CharListFile from '../char_list.json'
 
 // clipboard.js
 new Clipboard('.btn');
@@ -17,7 +17,7 @@ const VueTitle = new Vue({
         progress: 0
     },
     computed: {
-        title: function() {
+        title: function () {
             if (this.progress !== 0) {
                 return '[' + this.progress + '%] DeepAA on Web';
             } else {
@@ -88,21 +88,21 @@ new Vue({
                 this.modelInitializing = false;
             }
         },
-        onFileChange: function(e) {
+        onFileChange: function (e) {
             const files = e.target.files || e.dataTransfer.files;
             if (!files.length) {
                 return;
             }
             this.createImage(files[0]);
         },
-        createImage: function(file) {
+        createImage: function (file) {
             const reader = new FileReader();
             reader.onload = (e) => {
                 this.inputImage.URL = e.target.result;
             };
             reader.readAsDataURL(file);
         },
-        canvasResize: function(canvas, scale_ratio) {
+        canvasResize: function (canvas, scale_ratio) {
             return new Promise(resolve => {
                 const img = new Image();
                 img.onload = () => {
@@ -119,7 +119,7 @@ new Vue({
                 img.src = canvas.toDataURL();
             });
         },
-        grayscale: function(imageURL) {
+        grayscale: function (imageURL) {
             return new Promise(resolve => {
                 try {
                     // get image
@@ -147,7 +147,7 @@ new Vue({
                                     0.587 * pixels.data[pos + 1] +
                                     0.114 * pixels.data[pos + 2], 10);
                                 // update pixel data
-                                pixels.data[pos]     = grayScalePixelColor; // R
+                                pixels.data[pos] = grayScalePixelColor; // R
                                 pixels.data[pos + 1] = grayScalePixelColor; // G
                                 pixels.data[pos + 2] = grayScalePixelColor; // B
                                 pixels.data[pos + 3] = 255;                 // A
@@ -166,16 +166,16 @@ new Vue({
                 }
             });
         },
-        inputImageUpdate: async function() {
+        inputImageUpdate: async function () {
             this.grayscaleImage.URL = await this.grayscale(this.inputImage.URL);
         },
-        onLoadInputImage: function() {
+        onLoadInputImage: function () {
             this.inputImageUpdate();
         },
-        onClickInputImageWidth: function() {
+        onClickInputImageWidth: function () {
             this.inputImageUpdate();
         },
-        canvasAddMargin: function() {
+        canvasAddMargin: function () {
             return new Promise(resolve => {
                 const canvas = document.createElement("canvas");
                 const img = new Image();
@@ -192,7 +192,7 @@ new Vue({
                 img.src = this.grayscaleImage.URL;
             });
         },
-        convertAA: async function() {
+        convertAA: async function () {
             return new Promise(async resolve => {
                 this.modelRunning = true;
                 // reset status
@@ -202,33 +202,33 @@ new Vue({
 
                 // get input data
                 let dataTensor = undefined;
-                let MaxlineNum = undefined;
+                let maxLineNum = undefined;
                 {
                     const pixels = await this.canvasAddMargin();
                     // convert ndarray (width * height * RGBA)
                     const dataSourceTensor = ndarray(new Float32Array(pixels.data), [pixels.width, pixels.height, 4]);
                     dataTensor = ndarray(new Float32Array(pixels.width * pixels.height), [pixels.width, pixels.height, 1]);
                     // pick grayscale data (pick each 'R' data)
-                    ops.assign(dataTensor.pick(null, null, 0), dataSourceTensor.pick(null, null, 0))
+                    ops.assign(dataTensor.pick(null, null, 0), dataSourceTensor.pick(null, null, 0));
                     // normalization (0.0 ~ 1.0)
                     ops.divseq(dataTensor, 255);
                     // calc AA line count
-                    MaxlineNum = Math.floor((pixels.height - 48) / 18);
-                    this.outputAA.maxLineNum = MaxlineNum;
-                    this.resultAA.rows = MaxlineNum + 1;
+                    maxLineNum = Math.floor((pixels.height - 48) / 18);
+                    this.outputAA.maxLineNum = maxLineNum;
+                    this.resultAA.rows = maxLineNum + 1;
                     // update line preview canvas size
                     this.previewLineImage.width = pixels.width;
                     await this.setInterval(16); // FIXME
                 }
 
-                const float32concat = function(first, second) {
+                const float32concat = function (first, second) {
                     let result = new Float32Array(first.length + second.length);
                     result.set(first);
                     result.set(second, first.length);
                     return result;
                 };
 
-                const PERLINE = 1 / MaxlineNum;
+                const PERLINE = 1 / maxLineNum;
                 const updateProgress = (currentLineNum, end) => {
                     this.outputAA.currentLineNum = currentLineNum;
                     this.outputAA.linePercentage =
@@ -246,7 +246,7 @@ new Vue({
                 };
 
                 // loop each line
-                for (let i = 0; i < MaxlineNum; i++) {
+                for (let i = 0; i < maxLineNum; i++) {
                     // reshape lineImage
                     let lineImage =
                         dataTensor.data.slice(
@@ -269,8 +269,8 @@ new Vue({
                         let patch_data = new Float32Array([]);
                         for (let j = 0; j < 64; j++) {
                             let line_data = lineImage.slice(
-                                    (j * dataTensor.shape[0]) + start,
-                                    (j * dataTensor.shape[0]) + end);
+                                (j * dataTensor.shape[0]) + start,
+                                (j * dataTensor.shape[0]) + end);
                             patch_data = float32concat(patch_data, line_data);
                         }
                         let patch = ndarray(new Float32Array(patch_data), [64, 64]);
@@ -281,20 +281,20 @@ new Vue({
                         let y = await this.model.predict(inputData);
                         y = ndarray(y.predictions);
 
-                        if (penalty==1) {
+                        if (penalty === 1) {
                             y.set(1, 0);
                         }
 
-                        let predict = ops.argmax(y);
-                        let char = this.charListFile[predict][0];
-                        let char_width = this.charListFile[predict][1];
+                        let resultCharIndex = ops.argmax(y);
+                        let char = this.charListFile[resultCharIndex][0];
+                        let charWidth = this.charListFile[resultCharIndex][1];
 
                         this.resultAA.text += char;
-                        
-                        start += char_width;
-                        end += char_width;
 
-                        if (predict==1) {
+                        start += charWidth;
+                        end += charWidth;
+
+                        if (resultCharIndex === 1) {
                             penalty = 1;
                         } else {
                             penalty = 0;
@@ -311,27 +311,27 @@ new Vue({
                         // update preview image
                         this.previewLineImage.patchGuidePosX = start;
                         this.updatePreviewPatchImage(patch.data);
-                        // keep frame interval (16 msec)
+                        // keep frame interval
                         await timeout;
                     }
                     this.resultAA.text += '\n';
                 }
                 // finish
-                this.outputAA.currentLineNum = MaxlineNum;
+                this.outputAA.currentLineNum = maxLineNum;
                 this.outputAA.linePercentage = 100;
                 this.outputAA.totalPercentage = 100;
                 this.modelRunning = false;
                 resolve();
             });
         },
-        onClickConvertAAStart: async function() {
+        onClickConvertAAStart: async function () {
             try {
                 // wait until model is ready
                 await this.model.ready();
                 // check convert task is allready running
                 if (this.modelRunning) {
                     this.modelInterrupt = true;
-                    console.log('wait until stopped current process')
+                    console.log('wait until stopped current process');
                     await this.convertPromise;
                 }
                 // convert start
@@ -342,16 +342,16 @@ new Vue({
                 this.resultAA.text = err.message;
             }
         },
-        initLineImagePatchGuideRect: function() {
+        initLineImagePatchGuideRect: function () {
             const canvas = this.$refs.lineImagePatchGuideCanvas;
             const ctx = canvas.getContext("2d");
             // write blue rectangle (Patch Image Area)
-            ctx.beginPath()
+            ctx.beginPath();
             ctx.strokeStyle = 'blue';
             ctx.strokeRect(0, 0, 64, 64);
             ctx.strokeRect(24, 24, 16, 16);
         },
-        updatePreviewLineImage: function(data) {
+        updatePreviewLineImage: function (data) {
             // update canvas
             const canvas = this.$refs.lineImageCanvas;
             const ctx = canvas.getContext("2d");
@@ -372,7 +372,7 @@ new Vue({
             ctx.strokeStyle = 'red';
             ctx.strokeRect(24, 24, canvas.width - (24 * 2), 16);
         },
-        updatePreviewPatchImage: function(data) {
+        updatePreviewPatchImage: function (data) {
             const canvas = this.$refs.patchImageCanvas;
             const ctx = canvas.getContext("2d");
             const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -388,7 +388,7 @@ new Vue({
             }
             ctx.putImageData(pixels, 0, 0);
             // write red rectangle (convert AA area)
-            ctx.beginPath()
+            ctx.beginPath();
             ctx.strokeStyle = 'red';
             ctx.strokeRect(24, 24, 16, 16);
         },
@@ -397,7 +397,7 @@ new Vue({
         }
     },
     watch: {
-        'outputAA.totalPercentage': function(val, oldVal) {
+        'outputAA.totalPercentage': function (val, oldVal) {
             VueTitle.progress = val;
         },
         'highSpeedMode': function (val, oldVal) {
@@ -405,7 +405,7 @@ new Vue({
         }
     },
     computed: {
-        progressMessage: function() {
+        progressMessage: function () {
             if (this.outputAA.totalPercentage > 100) {
                 return 'Complete!';
             } else {
@@ -413,7 +413,7 @@ new Vue({
             }
         }
     },
-    mounted: function() {
+    mounted: function () {
         this.initLineImagePatchGuideRect();
     }
-})
+});
