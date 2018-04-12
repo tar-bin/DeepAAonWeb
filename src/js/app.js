@@ -218,7 +218,8 @@ new Vue({
                     this.resultAA.rows = maxLineNum + 1;
                     // update line preview canvas size
                     this.previewLineImage.width = pixels.width;
-                    await this.setInterval(16); // FIXME
+                    // update screen
+                    await this.setInterval(16);
                 }
 
                 const float32concat = function (first, second) {
@@ -252,8 +253,8 @@ new Vue({
                         dataTensor.data.slice(
                             (i * 18) * dataTensor.shape[0],
                             ((i * 18) + 64) * dataTensor.shape[0]);
-                    // update preview image
-                    this.updatePreviewLineImage(lineImage);
+
+                    let pLineImage = this.updatePreviewLineImage(lineImage);
 
                     let start = 0;
                     let end = 64;
@@ -273,32 +274,35 @@ new Vue({
                                 (j * dataTensor.shape[0]) + end);
                             patch_data = float32concat(patch_data, line_data);
                         }
+
                         let patch = ndarray(new Float32Array(patch_data), [64, 64]);
-                        // predict
-                        const inputData = {
-                            'input_1': patch.data
-                        };
-                        let y = await this.model.predict(inputData);
-                        y = ndarray(y.predictions);
 
-                        if (penalty === 1) {
-                            y.set(1, 0);
-                        }
+                        let pPatchImage = this.updatePreviewPatchImage(patch.data);
 
-                        let resultCharIndex = ops.argmax(y);
-                        let char = this.charListFile[resultCharIndex][0];
-                        let charWidth = this.charListFile[resultCharIndex][1];
+                        let pKerasPredict = this.model.predict({ 'input_1': patch.data })
+                            .then(value => {
+                                let y = ndarray(value.predictions);
+                                if (penalty === 1) {
+                                    y.set(1, 0);
+                                }
 
-                        this.resultAA.text += char;
+                                let resultCharIndex = ops.argmax(y);
+                                let char = this.charListFile[resultCharIndex][0];
+                                let charWidth = this.charListFile[resultCharIndex][1];
 
-                        start += charWidth;
-                        end += charWidth;
+                                this.resultAA.text += char;
 
-                        if (resultCharIndex === 1) {
-                            penalty = 1;
-                        } else {
-                            penalty = 0;
-                        }
+                                start += charWidth;
+                                end += charWidth;
+
+                                if (resultCharIndex === 1) {
+                                    penalty = 1;
+                                } else {
+                                    penalty = 0;
+                                }
+
+                                this.previewLineImage.patchGuidePosX = start;
+                            });
 
                         // interrupt
                         if (this.modelInterrupt) {
@@ -309,12 +313,14 @@ new Vue({
                         }
 
                         // update preview image
-                        this.previewLineImage.patchGuidePosX = start;
-                        this.updatePreviewPatchImage(patch.data);
-                        // keep frame interval
-                        await timeout;
+                        await Promise.all([
+                            pKerasPredict,
+                            pPatchImage,
+                            timeout
+                        ]);
                     }
                     this.resultAA.text += '\n';
+                    await pLineImage;
                 }
                 // finish
                 this.outputAA.currentLineNum = maxLineNum;
@@ -351,7 +357,7 @@ new Vue({
             ctx.strokeRect(0, 0, 64, 64);
             ctx.strokeRect(24, 24, 16, 16);
         },
-        updatePreviewLineImage: function (data) {
+        updatePreviewLineImage: async function (data) {
             // update canvas
             const canvas = this.$refs.lineImageCanvas;
             const ctx = canvas.getContext("2d");
@@ -372,7 +378,7 @@ new Vue({
             ctx.strokeStyle = 'red';
             ctx.strokeRect(24, 24, canvas.width - (24 * 2), 16);
         },
-        updatePreviewPatchImage: function (data) {
+        updatePreviewPatchImage: async function (data) {
             const canvas = this.$refs.patchImageCanvas;
             const ctx = canvas.getContext("2d");
             const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
