@@ -279,7 +279,7 @@ new Vue({
 
                         let pPatchImage = this.updatePreviewPatchImage(patch.data);
 
-                        let pKerasPredict = this.model.predict({ 'input_1': patch.data })
+                        let pKerasPredict = this.model.predict({'input_1': patch.data})
                             .then(value => {
                                 let y = ndarray(value.predictions);
                                 if (penalty === 1) {
