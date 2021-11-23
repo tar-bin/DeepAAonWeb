@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 
 module.exports = {
+    mode: 'development',
     context: path.resolve(__dirname, 'src'),
     entry: {
         app: './js/app.js'
@@ -19,7 +20,9 @@ module.exports = {
         })
     ],
     devServer: {
-        contentBase: path.resolve(__dirname, 'docs')
+        static: {
+            directory: path.resolve(__dirname, 'docs')
+        }
     },
     module: {
         rules: [
@@ -29,13 +32,16 @@ module.exports = {
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        presets: ['env']
+                        presets: [
+                            ['@babel/preset-env', { targets: "defaults" }]
+                        ]
                     }
                 }
             },
             {
                 test: /\.json$/,
-                use: 'json-loader'
+                use: 'json-loader',
+                type: "javascript/auto"
             }
         ]
     },
