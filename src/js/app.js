@@ -3,7 +3,7 @@ import * as KerasJS from 'keras-js'
 import ndarray from 'ndarray'
 import ops from 'ndarray-ops'
 import Vue from 'vue'
-import Clipboard from 'clipboard'
+import Clipboard from 'clipboard/dist/clipboard.min.js'
 
 // JSON
 import CharListFile from '../char_list.json'
