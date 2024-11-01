@@ -25,8 +25,8 @@
             <p>・本ツールによって作成された生成物に関して、本ツール作者は一切の権利を主張しません。</p>
             <p>・本ツールおよびその生成物を利用したことによるいかなる損害も本ツール作者は一切の責任を負いません。</p>
             <p>・入力画像はノイズを除去した細い線画をおすすめします。画像からの線画化は以下のツール等で作成できます。</p>
-            <p><a href="https://tar-bin.github.io/image-thinning-processer/"
-                target="_new">https://tar-bin.github.io/image-thinning-processer/</a>
+            <p><a href="https://online.rapidresizer.com/photograph-to-pattern.php"
+                target="_new">https://online.rapidresizer.com/photograph-to-pattern.php</a>
             </p>
           </v-card-text>
         </v-card>
@@ -88,7 +88,7 @@
                 </v-card-text>
               </v-card>
             </div>
-            <textarea class="w-100 aa border-md" style="margin-top: 20px;" :rows="resultAA.rows" v-model="resultAA.text"></textarea>
+            <textarea class="w-100 aa border-md" wrap="off" style="margin-top: 20px;" :rows="resultAA.rows" v-model="resultAA.text"></textarea>
           </v-card-text>
         </v-card>
       </v-container>
