@@ -14,11 +14,13 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@mdi/font": "^7.4.47",
     "@unhead/vue": "^1.11.10",
     "buffer": "^6.0.3",
     "keras-js": "^1.0.3",
     "ndarray": "^1.0.19",
-    "ndarray-ops": "^1.2.2"
+    "ndarray-ops": "^1.2.2",
+    "vuetify": "^3.7.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.4",

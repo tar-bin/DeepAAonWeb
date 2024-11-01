@@ -1,137 +1,99 @@
 <template>
-  <div class="container-fluid">
-    <!-- Navi bar -->
-    <nav class="navbar navbar-default navbar-fixed-top">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="#">DeepAA on Web : Version 2.2</a>
-          <div class="navbar-text" v-if="modelLoading" v-cloak>
-            Model Loading...{{ modelLoadingProgress }}%
-          </div>
-          <div class="navbar-text" v-else-if="modelInitializing" v-cloak>
-            Model Initializing...{{ modelInitProgress }}%
-          </div>
-        </div>
-        <ul class="nav navbar-nav navbar-right">
-          <li><a href="https://github.com/tar-bin/DeepAAonWeb" target="_new">DeepAAonWeb (GitHub)</a></li>
-          <li><a href="https://github.com/OsciiArt/DeepAA" target="_new">DeepAA (GitHub)</a></li>
-        </ul>
+  <v-app>
+    <v-app-bar title="DeepAA on Web : Model Version 2" color="blue-grey" scroll-behavior="hide">
+      <div class="navbar-text" v-if="modelLoading" v-cloak>
+        Model Loading...{{ modelLoadingProgress }}%
       </div>
-    </nav>
-    <!-- Main -->
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
-      <!-- Info -->
-      <div class="alert alert-info" role="alert">
-        <p>・動作保証はGoogle Chromeのみです。画像を選択、加工後、Startボタンで実行してください。</p>
-        <p>・選択された画像はローカルにのみ保持されます。外部サーバーには送信されません。</p>
-        <p>・本ツールによって作成された生成物に関して、本ツール作者は一切の権利を主張しません。</p>
-        <p>・本ツールおよびその生成物を利用したことによるいかなる損害も本ツール作者は一切の責任を負いません。</p>
-        <p>・入力画像はノイズを除去した細い線画をおすすめします。画像からの線画化は以下のツール等で作成できます。</p>
-        <p><a href="https://tar-bin.github.io/image-thinning-processer/"
-            target="_new">https://tar-bin.github.io/image-thinning-processer/</a>
-        </p>
+      <div class="navbar-text" v-else-if="modelInitializing" v-cloak>
+        Model Initializing...{{ modelInitProgress }}%
       </div>
-      <!-- Orignal Image -->
-      <div class="col-xs-6 col-md-6">
-        <div class="panel panel-default">
-          <div class="panel-heading" v-cloak>
-            Original Image {{ inputImage.width }} x {{ inputImage.height }}
+      <v-btn prepend-icon="mdi-github" href="https://github.com/tar-bin/DeepAAonWeb" target="_blank">
+        DeepAAonWeb
+      </v-btn>
+      <v-btn prepend-icon="mdi-github" href="https://github.com/OsciiArt/DeepAA" target="_blank">
+        DeepAA
+      </v-btn>
+    </v-app-bar>
+    <v-main>
+      <v-container>
+        <!-- Info -->
+        <v-card color="blue-grey-lighten-5">
+          <v-card-title>注意事項</v-card-title>
+          <v-card-text>
+            <p>・動作保証はGoogle Chromeのみです。画像を選択、加工後、Startボタンで実行してください。</p>
+            <p>・選択された画像はローカルにのみ保持されます。外部サーバーには送信されません。</p>
+            <p>・本ツールによって作成された生成物に関して、本ツール作者は一切の権利を主張しません。</p>
+            <p>・本ツールおよびその生成物を利用したことによるいかなる損害も本ツール作者は一切の責任を負いません。</p>
+            <p>・入力画像はノイズを除去した細い線画をおすすめします。画像からの線画化は以下のツール等で作成できます。</p>
+            <p><a href="https://tar-bin.github.io/image-thinning-processer/"
+                target="_new">https://tar-bin.github.io/image-thinning-processer/</a>
+            </p>
+          </v-card-text>
+        </v-card>
+        <!-- Orignal Image -->
+        <div class="d-flex" style="margin-top: 20px;">
+          <div style="min-width: 300px; margin-right: 20px;">
+            <v-card color="blue-grey-lighten-5">
+              <v-card-title>Input Image</v-card-title>
+              <v-card-subtitle>Size: {{ inputImage.width }} x {{ inputImage.height }} px</v-card-subtitle>
+              <v-card-text>
+                <v-file-input label="Input Image" @change="onFileChange"></v-file-input>
+                <v-img id="img-input" class="img-thumbnail" :src="inputImage.URL" @load="onLoadInputImage"></v-img>
+              </v-card-text>
+            </v-card>
           </div>
-          <div class="panel-body">
-            <form class="form-inline">
-              <div class="form-group">
-                <input type="file" @change="onFileChange">
-              </div>
-            </form>
-            <img id="img-input" class="img-thumbnail" :src="inputImage.URL" @load="onLoadInputImage">
-          </div>
-        </div>
-      </div>
-      <!-- Input Image -->
-      <div class="col-xs-6 col-md-6">
-        <div class="panel panel-default">
-          <div class="panel-heading" v-cloak>
-            Input Image {{ grayscaleImage.width }} x {{ grayscaleImage.height }}
-          </div>
-          <div class="panel-body">
-            <form class="form-inline" onsubmit="return false;">
-              <div class="form-group">
-                <label for="outputAASize">Output Width:</label>
-                <input v-model="outputAA.width" type="text" class="form-control" id="outputAASize" placeholder="出力横幅"
-                  maxlength="4" pattern="^[0-9]+$" required>
-                <button class="btn btn-default" @click="onClickInputImageWidth">update</button>
-              </div>
-            </form>
-            <img id="img-grayscale" class="img-thumbnail" :src="grayscaleImage.URL">
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Output AA -->
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
-      <div class="panel panel-default">
-        <div class="panel-heading">Output AA</div>
-        <div class="panel-body">
-          <div class="row">
-            <div class="col-xs-1 col-md-1">
-              <!-- Start Button -->
-              <button class="btn btn-primary" @click="onClickConvertAAStart">Start</button>
-            </div>
-            <div class="col-xs-2 col-md-2">
-              <p class="text-center" style="margin-left: 10px" v-cloak>
-                {{ '[' + outputAA.currentLineNum + ' / ' + outputAA.maxLineNum + '][' + outputAA.linePercentage + '%]'
-                }}
-              </p>
-            </div>
-            <div class="col-xs-9 col-md-9">
-              <div class="progress">
-                <div class="progress-bar" v-bind:style="{ width: outputAA.totalPercentage + '%' }" v-cloak>
-                  {{ progressMessage }}
+          <div style="min-width: 300px;">
+            <v-card color="blue-grey-lighten-5">
+              <v-card-title>修正画像(拡大、グレースケール化)</v-card-title>
+              <v-card-subtitle>Size: {{ grayscaleImage.width }} x {{ grayscaleImage.height }} px</v-card-subtitle>
+              <v-card-text>
+                <div class="d-flex justify-space-between">
+                  <v-text-field class="w-50" v-model="outputAA.width" maxlength="4" pattern="^[0-9]+$"
+                    required></v-text-field>
+                  <v-btn class="w-25 ma-2" @click="onClickInputImageWidth">更新</v-btn>
                 </div>
-              </div>
-            </div>
+                <v-img id="img-grayscale" class="img-thumbnail" :src="grayscaleImage.URL"></v-img>
+              </v-card-text>
+            </v-card>
           </div>
-          <div class="row">
-            <div class="checkbox" style="margin-left: 20px">
-              <label>
-                <input type="checkbox" id="highspeedmode" v-model="highSpeedMode">
-                高速モード(高負荷)
-              </label>
+        </div>
+        <v-card color="blue-grey-lighten-5" style="margin-top: 20px;">
+          <v-card-title>AA出力</v-card-title>
+          <v-card-text>
+            <div class="d-flex ga-10 align-md-center" style="margin-top: -20px;">
+              <v-btn @click="onClickConvertAAStart">Start</v-btn>
+              <v-switch style="padding-top: 20px;" label="高速モード(高負荷)" v-model="highSpeedMode"></v-switch>
             </div>
-          </div>
-          <div class="row">
-            <!-- Line Image -->
-            <div class="col-xs-12 col-sm-12 col-md-10">
-              <div class="panel panel-default">
-                <div class="panel-heading">Line Image</div>
-                <div class="panel-body" style="height: 104px">
-                  <div style="position: relative">
-                    <canvas class="img-thumbnail" ref="lineImageCanvas" style="position: absolute"
+            <v-slider label="Progress" v-model="outputAA.currentLineNum" :thumb-size="8" :max="outputAA.maxLineNum" step="0.2" thumb-label="always" readonly>
+              <template v-slot:thumb-label="{ modelValue }">
+                {{ outputAA.totalPercentage }}%
+              </template>
+            </v-slider>
+            <div class="d-flex">
+              <v-card class="w-75 ma-2">
+                <v-card-title>Line Image</v-card-title>
+                <v-card-text>
+                  <div style="position: relative; height: 70px;">
+                    <canvas class="img-thumbnail border-thin" ref="lineImageCanvas" style="position: absolute"
                       :width="previewLineImage.width" height="64"></canvas>
                     <canvas ref="lineImagePatchGuideCanvas" id="patch-guide"
-                      :style="{ left: previewLineImage.patchGuidePosX  + 'px'}" width="64" height="64"></canvas>
+                      :style="{ left: previewLineImage.patchGuidePosX + 'px' }" width="64" height="64"></canvas>
                   </div>
-                </div>
-              </div>
+                </v-card-text>
+              </v-card>
+              <v-card class="w-15 ma-2">
+                <v-card-title>Patch Image</v-card-title>
+                <v-card-text style="height: 70px;">
+                  <canvas class="img-thumbnail border-thin" width="64" height="64" ref="patchImageCanvas"></canvas>
+                </v-card-text>
+              </v-card>
             </div>
-            <!-- Patch Image -->
-            <div class="col-xs-12 col-sm-12 col-md-2">
-              <div class="panel panel-default">
-                <div class="panel-heading">Patch Image</div>
-                <div class="panel-body">
-                  <canvas class="img-thumbnail" width="64" height="64" ref="patchImageCanvas"></canvas>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Copy Button -->
-          <button class="btn btn-default" :data-clipboard-text="resultAA.text">Copy to clipboard</button>
-          <!-- Result AA -->
-          <textarea id="result_aa" class="form-control aa" :rows="resultAA.rows" v-model="resultAA.text"></textarea>
-        </div>
-      </div>
-    </div>
-  </div>
+            <textarea class="w-100 aa border-md" style="margin-top: 20px;" :rows="resultAA.rows" v-model="resultAA.text"></textarea>
+          </v-card-text>
+        </v-card>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script setup>
@@ -157,35 +119,35 @@ const lineImagePatchGuideCanvas = ref(null);
 const lineImageCanvas = ref(null);
 const patchImageCanvas = ref(null);
 const inputImage = reactive({
-    URL: sampleImageUrl,
-    width: 0,
-    height: 0
+  URL: sampleImageUrl,
+  width: 0,
+  height: 0
 });
 const grayscaleImage = reactive({
-    URL: '',
-    width: 0,
-    height: 0
+  URL: '',
+  width: 0,
+  height: 0
 });
 const previewLineImage = reactive({
-    width: 632,
-    patchGuidePosX: 0
+  width: 632,
+  patchGuidePosX: 0
 });
 const outputAA = reactive({
-    maxLineNum: '-',
-    currentLineNum: '-',
-    totalPercentage: 0,
-    linePercentage: 0,
-    width: 550,
+  maxLineNum: '-',
+  currentLineNum: '-',
+  totalPercentage: 0,
+  linePercentage: 0,
+  width: 550,
 });
 const resultAA = reactive({
-    text: '',
-    rows: 8
+  text: '',
+  rows: 8
 });
 const highSpeedMode = ref(false);
 
 const model = new KerasJS.Model({
-    filepath: kerasModelUrl,
-    gpu: true
+  filepath: kerasModelUrl,
+  gpu: true
 });
 
 watch(highSpeedMode, (val, oldVal) => {
@@ -193,17 +155,17 @@ watch(highSpeedMode, (val, oldVal) => {
 });
 
 const progressMessage = computed(() => {
-    if (outputAA.totalPercentage > 100) {
-        return 'Complete!';
-    }
-    return `${outputAA.totalPercentage}%`;
+  if (outputAA.totalPercentage > 100) {
+    return 'Complete!';
+  }
+  return `${outputAA.totalPercentage}%`;
 });
 
 const handleLoadingProgress = (progress) => {
-    modelLoadingProgress.value = Math.round(progress);
-    if (progress === 100) {
-        modelLoading.value = false;
-    }
+  modelLoadingProgress.value = Math.round(progress);
+  if (progress === 100) {
+    modelLoading.value = false;
+  }
 };
 
 const handleInitProgress = (progress) => {
@@ -214,20 +176,33 @@ const handleInitProgress = (progress) => {
 };
 
 const onFileChange = (e) => {
-    const files = e.target.files || e.dataTransfer.files;
-    if (!files.length) {
-        return;
-    }
-    createImage(files[0]);
+  const files = e.target.files || e.dataTransfer.files;
+  if (!files.length) {
+    return;
+  }
+  createImage(files[0]);
 };
 
 const createImage = (file) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        inputImage.URL = e.target.result;
-    };
-    reader.readAsDataURL(file);
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    inputImage.URL = e.target.result;
+  };
+  reader.readAsDataURL(file);
 };
+
+const loadImage = (imageURL) => {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = async () => {
+      inputImage.width = img.width;
+      inputImage.height = img.height;
+      outputAA.width = img.width;
+      resolve();
+    };
+    img.src = imageURL;
+  });
+}
 
 const canvasResize = (canvas, scale_ratio) => {
   return new Promise(resolve => {
@@ -295,16 +270,17 @@ const grayscale = (imageURL) => {
   });
 };
 
-const inputImageUpdate = async () => {
-    grayscaleImage.URL = await grayscale(inputImage.URL);
+const fixedImageUpdate = async () => {
+  grayscaleImage.URL = await grayscale(inputImage.URL);
 };
 
-const onLoadInputImage = () => {
-    inputImageUpdate();
+const onLoadInputImage = async () => {
+  await loadImage(inputImage.URL);
+  await fixedImageUpdate();
 };
 
-const onClickInputImageWidth = () => {
-    inputImageUpdate();
+const onClickInputImageWidth = async () => {
+  await fixedImageUpdate();
 };
 
 const canvasAddMargin = () => {
@@ -464,35 +440,35 @@ const convertAA = async () => {
 };
 
 const onClickConvertAAStart = async () => {
-    try {
-        // wait until model is ready
-        await model.ready();
-        // check convert task is allready running
-        if (modelRunning.value) {
-            modelInterrupt.value = true;
-            console.log('wait until stopped current process');
-            await convertPromise.value;
-        }
-        // convert start
-        convertPromise.value = convertAA();
-    } catch (err) {
-        modelRunning.value = false;
-        console.error('onClickConvertAAStart', err.message);
-        resultAA.text = err.message;
+  try {
+    // wait until model is ready
+    await model.ready();
+    // check convert task is allready running
+    if (modelRunning.value) {
+      modelInterrupt.value = true;
+      console.log('wait until stopped current process');
+      await convertPromise.value;
     }
+    // convert start
+    convertPromise.value = convertAA();
+  } catch (err) {
+    modelRunning.value = false;
+    console.error('onClickConvertAAStart', err.message);
+    resultAA.text = err.message;
+  }
 };
 
 const initLineImagePatchGuideRect = () => {
-    const canvas = lineImagePatchGuideCanvas.value;
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    // write blue rectangle (Patch Image Area)
-    ctx.beginPath();
-    ctx.strokeStyle = 'blue';
-    ctx.strokeRect(0, 0, 64, 64);
-    ctx.strokeRect(24, 24, 16, 16);
+  const canvas = lineImagePatchGuideCanvas.value;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  // write blue rectangle (Patch Image Area)
+  ctx.beginPath();
+  ctx.strokeStyle = 'blue';
+  ctx.strokeRect(0, 0, 64, 64);
+  ctx.strokeRect(24, 24, 16, 16);
 };
 
-const updatePreviewLineImage = async (data) => { 
+const updatePreviewLineImage = async (data) => {
   // update canvas
   const canvas = lineImageCanvas.value;
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
@@ -536,13 +512,14 @@ const updatePreviewPatchImage = async (data) => {
 };
 
 const setInterval = async (ms) => {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 model.events.on('loadingProgress', handleLoadingProgress);
 model.events.on('initProgress', handleInitProgress);
 
-onMounted(() => {
+onMounted(async () => {
+  await loadImage(inputImage.URL);
   initLineImagePatchGuideRect();
 });
 
@@ -554,9 +531,9 @@ useHead({
 <style scoped>
 @font-face {
   font-family: 'Saitamaar';
-  src: url('assets/fonts/Saitamaar.woff2') format('woff2'),
-    url('assets/fonts/Saitamaar.eot') format('eot'),
-    url('assets/fonts/Saitamaar.ttf') format('truetype');
+  src: url('./assets/fonts/Saitamaar.woff2') format('woff2'),
+    url('./assets/fonts/Saitamaar.eot') format('eot'),
+    url('./assets/fonts/Saitamaar.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -565,6 +542,7 @@ useHead({
   font-family: 'ＭＳ Ｐゴシック', 'MS PGothic', 'Saitamaar', serif !important;
   line-height: 18px;
   font-size: 16px;
+  overflow: auto;
 }
 
 body {
