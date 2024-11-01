@@ -1,46 +1,27 @@
 {
   "name": "deepaaonweb",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "DeepAA front-end on Web",
   "repository": {
     "type": "git",
     "url": "https://github.com/tar-bin/DeepAAonWeb"
   },
-  "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server",
-    "production": "webpack",
-    "develop": "webpack -d",
-    "watch": "webpack -d --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "bootstrap": "^3.3.7",
-    "clipboard": "^2.0.8",
+    "@unhead/vue": "^1.11.10",
+    "buffer": "^6.0.3",
     "keras-js": "^1.0.3",
     "ndarray": "^1.0.19",
-    "ndarray-ops": "^1.2.2",
-    "vue": "^2.6.14"
+    "ndarray-ops": "^1.2.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.16.0",
-    "@babel/preset-env": "^7.16.4",
-    "babel-loader": "^8.2.3",
-    "css-loader": "^6.5.1",
-    "deepmerge": "^4.2.2",
-    "html-webpack-plugin": "^5.5.0",
-    "json-loader": "^0.5.7",
-    "raw-loader": "^0.5.1",
-    "sass": "~1.32.0",
-    "sass-loader": "^8.0.0",
-    "style-loader": "^3.3.1",
-    "url-loader": "^4.1.1",
-    "vue-style-loader": "^4.1.3",
-    "webpack": "^5.64.2",
-    "webpack-cli": "^4.9.1",
-    "webpack-dev-server": "^4.5.0",
-    "webpack-shell-plugin-next": "^2.2.2"
+    "@vitejs/plugin-vue": "^5.1.4",
+    "vite": "^5.4.10"
   }
 }

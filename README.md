@@ -1,20 +1,5 @@
-# DeepAAonWeb
-DeepAA front-end on Web
+# Vue 3 + Vite
 
-# Model Data
+This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
 
-[OsciiArt/DeepAA: make Ascii Art by Deep Learing (MIT License)](https://github.com/OsciiArt/DeepAA)
-
-## Dependency
-### Library
-
-+ [Bootstrap v3 (MIT License)](http://getbootstrap.com/)
-+ [transcranial/keras-js (MIT License)](https://github.com/transcranial/keras-js)
-+ [scijs/ndarray (MIT LIcense)](https://github.com/scijs/ndarray)
-+ [scijs/ndarray-ops (MIT License)](https://github.com/scijs/ndarray-ops)
-+ [vuejs/vue (MIT License)](https://github.com/vuejs/vue)
-+ [clipboard.js (MIT License)](https://clipboardjs.com/)
-
-### Fonts
-
-+ [keage/Saitamaar (MIT License)](https://github.com/keage/Saitamaar)
+Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
