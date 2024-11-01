@@ -154,13 +154,6 @@ watch(highSpeedMode, (val, oldVal) => {
   console.debug(`hs: ${val}`);
 });
 
-const progressMessage = computed(() => {
-  if (outputAA.totalPercentage > 100) {
-    return 'Complete!';
-  }
-  return `${outputAA.totalPercentage}%`;
-});
-
 const handleLoadingProgress = (progress) => {
   modelLoadingProgress.value = Math.round(progress);
   if (progress === 100) {
