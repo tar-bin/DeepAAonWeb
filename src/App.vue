@@ -233,7 +233,7 @@ const canvasResize = (canvas, scale_ratio) => {
   return new Promise(resolve => {
     const img = new Image();
     img.onload = () => {
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
       canvas.width *= scale_ratio;
       canvas.height *= scale_ratio;
       ctx.scale(scale_ratio, scale_ratio);
@@ -254,7 +254,7 @@ const grayscale = (imageURL) => {
       const canvas = document.createElement("canvas");
       const img = new Image();
       img.onload = async () => {
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
         canvas.width = img.width;
         canvas.height = img.height;
         // draw image to canvas
@@ -312,7 +312,7 @@ const canvasAddMargin = () => {
     const canvas = document.createElement("canvas");
     const img = new Image();
     img.onload = () => {
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
       canvas.width = 24 + img.width + (15 + 24);
       canvas.height = 24 + img.height + (17 + 24);
       ctx.fillStyle = "white";
@@ -484,7 +484,7 @@ const onClickConvertAAStart = async () => {
 
 const initLineImagePatchGuideRect = () => {
     const canvas = lineImagePatchGuideCanvas.value;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
     // write blue rectangle (Patch Image Area)
     ctx.beginPath();
     ctx.strokeStyle = 'blue';
@@ -495,7 +495,7 @@ const initLineImagePatchGuideRect = () => {
 const updatePreviewLineImage = async (data) => { 
   // update canvas
   const canvas = lineImageCanvas.value;
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
   const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
   for (let y = 0; y < pixels.height; y++) {
     for (let x = 0; x < pixels.width; x++) {
@@ -516,7 +516,7 @@ const updatePreviewLineImage = async (data) => {
 
 const updatePreviewPatchImage = async (data) => {
   const canvas = patchImageCanvas.value;
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
   const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
   for (let y = 0; y < pixels.height; y++) {
     for (let x = 0; x < pixels.width; x++) {
