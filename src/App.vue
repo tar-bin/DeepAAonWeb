@@ -355,6 +355,22 @@ const convertAA = async () => {
       return setInterval(16);
     };
 
+    const DEBUG = true;
+    let whiteSpaceIndex = undefined;
+
+    // 半角スペースのインデックスを検索
+    for (const [index, charPair] of Object.entries(charListFile)) {
+      if (charPair[0] === " ") {
+        whiteSpaceIndex = Number(index);
+        console.log(`half white space index: ${index}`);
+        break;
+      }
+    }
+    if (whiteSpaceIndex === undefined) {
+      console.error('half white space missing');
+      return;
+    }
+
     // loop each line
     for (let i = 0; i < maxLineNum; i++) {
       // reshape lineImage
@@ -397,13 +413,19 @@ const convertAA = async () => {
             const resultCharIndex = ops.argmax(y);
             const char = charListFile[resultCharIndex][0];
             const charWidth = charListFile[resultCharIndex][1];
+            if (DEBUG && char === " ") {
+              console.log(`half white space: ${resultCharIndex}`);
+            }
 
             resultAA.text += char;
 
             start += charWidth;
             end += charWidth;
 
-            if (resultCharIndex === 1) {
+            if (Object.is(Number(resultCharIndex), Number(whiteSpaceIndex))) {
+              if (DEBUG) {
+                console.log(`half white space penalty: ${resultCharIndex}`);
+              }
               penalty = 1;
             } else {
               penalty = 0;
@@ -427,6 +449,7 @@ const convertAA = async () => {
           timeout
         ]);
       }
+      resultAA.text = resultAA.text.trimEnd();
       resultAA.text += '\n';
       await pLineImage;
     }
