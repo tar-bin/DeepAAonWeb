@@ -143,7 +143,7 @@ const resultAA = reactive({
   text: '',
   rows: 8
 });
-const highSpeedMode = ref(false);
+const highSpeedMode = ref(true);
 
 const model = new KerasJS.Model({
   filepath: kerasModelUrl,
